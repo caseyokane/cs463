@@ -1,0 +1,578 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>Atomic Chaos</title>
+</head>
+<body bgcolor=white background="images/backgrnd/cubeback.gif">
+
+<div align=center><center>
+<script language="JavaScript1.1" type="text/javascript">
+<!--
+version=1.1;
+// -->
+</script>
+<script language="JavaScript" type="text/javascript">
+<!--
+if(version==null)
+document.write("<p><font face='Arial' size=2><big><big><b>Your browser does not have Javascript 1.1 capabilities. "
+            +"You need Netscape 3+ or MSIE 4+ to see the puzzle simulation.<\/b><\/big><\/big>");
+//-->
+</script><noscript><p><font face="Arial" size=2><big><big><b>Your browser does not have Javascript 1.1 capabilities. You need Netscape 3+ or MSIE 4+ to see the puzzle simulation.</b></big></big></font></noscript>
+<script language="JavaScript1.1" type="text/javascript">
+<!--
+    // Javascript written by Jaap Scherphuis. (jaapsch a t yahoo d o t com)
+
+var imagedir="images/chaos/";
+function preload(){
+    this.length=preload.arguments.length;
+    for (var i=0;i<this.length;i++){
+        this[i]=new Image();
+        this[i].src=imagedir+preload.arguments[i];
+    }
+}
+
+var pics=new preload(
+            "blank.gif",
+            "acright.gif","acleft.gif","acblank.gif",
+            "acblack.gif","acwhite.gif","acblue.gif",
+            "acyello.gif","acgreen.gif","acred.gif"
+            );
+var edtpics=new preload(
+            "blank.gif","acarrow.gif",
+            "acblack0.gif","acwhite0.gif","acblue0.gif",
+            "acyello0.gif","acgreen0.gif","acred0.gif",
+            "acnum0.gif","acnum1.gif","acnum2.gif","acnum3.gif",
+            "acnum4.gif","acnum5.gif","acnum6.gif"
+            );
+
+imagedir="images/buttons/";
+var butpics=new preload(
+            "edit.gif","edit2.gif",
+            "solve.gif","solve2.gif",
+            "play.gif","pause.gif",
+            "mix.gif","reset.gif","help.gif"
+            );
+
+
+
+
+
+var posit = new Array ();
+var grav;
+function initbrd(){
+    posit = new Array (
+        -1, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6,-2,
+        -3,-1, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5,-2,-3,
+        -3,-3,-1, 0, 0, 0, 0, 4, 4, 4, 4,-2,-3,-3,
+        -3,-3,-3,-1, 0, 0, 0, 3, 3, 3,-2,-3,-3,-3,
+        -3,-3,-3,-3,-1, 0, 0, 2, 2,-2,-3,-3,-3,-3,
+        -3,-3,-3,-3,-3,-1, 0, 1,-2,-3,-3,-3,-3,-3);
+    grav=1;
+}
+initbrd();
+var mode = 0;   //0=normal  1=solving scrambled  2=edit  3=solving
+var seq = new Array();
+var edtamnt = new Array(0,0,0,0,0,0);
+var edtcol;
+
+function printbrd(){
+    var i,j,c=0;
+    document.writeln("<table cellpadding=0 cellspacing=0 border=0><tr>");
+    for(i=0;i<6;i++){
+        for(j=0;j<14;j++){
+            document.writeln("<td><a href='javascript:clicked("+i+","+j+");'>"+
+                "<img src='"+pics[3+posit[c]].src+"' height=22 width=20 "+
+                "name='piece"+i+""+j+"' border=0><\/a><\/td>");
+            if(j==6)
+                document.writeln("<td bgcolor=black><img src='"+pics[0].src+"' height=22 width=1><\/td>");
+            c++;
+        }
+        document.writeln("<td><a href='javascript:clicked("+i+",-1);'>"+
+            "<img src='"+edtpics[0].src+"' height=22 width=10 "+
+            "name='arrow"+i+"' border=0><\/a><\/td>");
+        document.writeln("<td><a href='javascript:clicked("+i+",-2);'>"+
+            "<img src='"+edtpics[0].src+"' height=22 width=10 "+
+            "name='number"+i+"' border=0><\/a><\/td>");
+        document.writeln("<td><a href='javascript:clicked("+i+",-3);'>"+
+            "<img src='"+edtpics[0].src+"' height=22 width=20 "+
+            "name='colour"+i+"' border=0><\/a><\/td>");
+        document.writeln("<\/tr><tr>");
+    }
+    document.write("<td colspan=18 height=3><\/td><\/tr><tr><td colspan=18 align=center>");
+    document.write("<a href='javascript:mix();'><img src='"+butpics[6].src+"' height=16 width=48 border=0><\/a>");
+    document.write("<a href='javascript:reset();'><img src='"+butpics[7].src+"' height=16 width=48 border=0><\/a>");
+    document.write("<a href='javascript:edit();'><img src='"+butpics[0].src+"' height=16 width=48 border=0 name='edit'><\/a>");
+    document.write("<a href='javascript:help();'><img src='"+butpics[8].src+"' height=16 width=48 border=0><\/a>");
+    document.write("<\/td><\/tr><tr><td colspan=18 align=center>");
+    document.write("<a href='javascript:solve();'><img src='"+butpics[2].src+"' height=16 width=48 border=0 name='solve'><\/a>");
+    document.write("<a href='javascript:solplay();'><img src='"+butpics[4].src+"' height=16 width=48 border=0 name='play'><\/a>");
+    document.writeln("<\/td><\/tr><\/table>");
+}
+printbrd();
+
+function display(){
+    var c=0;
+    for(var i=0;i<6;i++){
+        for(var j=0;j<14;j++){
+            document.images["piece"+i+""+j].src=pics[3+posit[c]].src;
+            c++;
+        }
+    }
+    if( mode==2 ){
+        for(var i=0;i<6;i++){
+            document.images["arrow"+i].src=edtpics[i+1==edtcol ? 1 : 0].src;
+            document.images["number"+i].src=edtpics[8+edtamnt[i]].src;
+            document.images["colour"+i].src=edtpics[2+i].src;
+        }
+    }else{
+        for(var i=0;i<6;i++){
+            document.images["arrow"+i].src=edtpics[0].src;
+            document.images["number"+i].src=edtpics[0].src;
+            document.images["colour"+i].src=edtpics[0].src;
+        }
+    }
+
+    displaybut();
+
+    if(mode==1 && solved()){
+        alert("You solved it!\nYou don't get a prize for this though!");
+        mode=0;
+    }
+}
+
+function displaybut(){
+    if(mode==2) document.images["edit"].src=butpics[1].src;
+    else document.images["edit"].src=butpics[0].src;
+    if(mode>=3) document.images["solve"].src=butpics[3].src;
+    else document.images["solve"].src=butpics[2].src;
+    if(mode==4) document.images["play"].src=butpics[5].src;
+    else document.images["play"].src=butpics[4].src;
+}
+
+function solved(){
+    var i,j,c,cl;
+    c=0;
+    for (i=0;i<6;i++){
+        cl=0;
+        for( j=0; j<14; j++){
+            if( posit[c]==-1 ){
+                cl=6-j;
+                if( posit[c-j+13-j]!=-2 ) return(false);
+            }
+            else if(posit[c]>0 && posit[c]!=cl) return(false);
+            c++;
+        }
+    }
+    return(true);
+}
+
+function left(){
+    if(mode>=3) mode=1;
+    if(mode!=2 && grav>0){
+        doleft();
+        display();
+    }
+}
+function doleft(){
+    // shift all balls to the left
+    var i=1,f=0;
+    while( i<83 ){
+        if(posit[i]>0 && posit[i-1]==0){
+            posit[i-1]=posit[i];
+            posit[i]=0;
+            i--;
+            f++;
+        }else i++;
+    }
+    grav=-1;
+    return(f);
+}
+function right(){
+    if(mode>=3) mode=1;
+    if(mode!=2 && grav<0){
+        doright();
+        display();
+    }
+}
+function doright(){
+    // shift all balls to the left
+    var i=82,f=0;
+    while( i>0 ){
+        if(posit[i]>0 && posit[i+1]==0){
+            posit[i+1]=posit[i];
+            posit[i]=0;
+            i++;
+            f++;
+        }else i--;
+    }
+    grav=1;
+    return(f);
+}
+function up(i){
+    if(mode>=3) mode=1;
+    if(mode!=2){
+        doup(i);
+        display();
+    }
+}
+function doup(s){
+    // shift on half of the puzzle upwards
+    var i,k,o;
+    o=s?7:0;
+    for( i=0; i<7; i++){
+        k=posit[o];
+        posit[o   ]=posit[o+14];
+        posit[o+14]=posit[o+28];
+        posit[o+28]=posit[o+42];
+        posit[o+42]=posit[o+56];
+        posit[o+56]=posit[o+70];
+        posit[o+70]=k;
+        o++;
+    }
+    if(grav<0) return doleft();
+    else if(grav>0) return doright();
+}
+function down(i){
+    if(mode>=3) mode=1;
+    if(mode!=2){
+        dodown(i);
+        display();
+    }
+}
+function dodown(s){
+    // shift on half of the puzzle upwards
+    var i,k,o;
+    o=s?7:0;
+    for( i=0; i<7; i++){
+        k=posit[o+70];
+        posit[o+70]=posit[o+56];
+        posit[o+56]=posit[o+42];
+        posit[o+42]=posit[o+28];
+        posit[o+28]=posit[o+14];
+        posit[o+14]=posit[o];
+        posit[o]=k;
+        o++;
+    }
+    if(grav<0) return doleft();
+    else if(grav>0) return doright();
+}
+
+
+function mix(){
+    var i,j,k;
+    clearbrd();
+    for(i=0;i<6;i++){
+        for(j=0;j<=i;j++){
+            do{
+                k=Math.floor(Math.random()*84);
+            }while(posit[k]!=0);
+            posit[k]=i+1;
+        }
+    }
+    grav=0;
+    k=Math.floor(Math.random()*6);
+    while(k--) doup(0);
+    k=Math.floor(Math.random()*6);
+    while(k--) doup(1);
+    doright();
+    mode=1;
+    display();
+}
+
+function reset(){
+    initbrd();
+    mode=0;
+    display();
+}
+
+function clearbrd(){
+    //clear pieces
+    grav=0;
+    for(var i=0;i<84;i++)
+        if( posit[i]>0 ) posit[i]=0;
+}
+function edit(){
+    if(mode!=2){
+        mode=2;
+        clearbrd();
+        for( var i=1; i<7; i++) edtamnt[i-1]=i;
+        edtcol=1;   //default colour selection
+        display();
+    }else{
+        //test that all pieces have been placed
+        for( var i=0; i<6; i++){
+            if( edtamnt[i]>0 ){
+                alert("You haven't placed all the balls yet.\nTo abort editing, you can click reset.");
+                return;
+            }
+        }
+        // all balls placed
+        mode=1;
+        display();
+    }
+}
+
+function clicked(y,x){
+    var c=y*14+x;
+    focus();
+    if(mode==2){  //editing
+        if( x>=0 ){
+            if(posit[c]>=0){
+                if( posit[c]>0 ){
+                    edtamnt[posit[c]-1]++;  // adjust count if removing existing ball
+                    if( posit[c]!=edtcol && edtamnt[edtcol-1]>0 ){
+                        posit[c]=edtcol;    // place new ball
+                        edtamnt[edtcol-1]--;    // adjust colour count
+                    }else{
+                        edtcol=posit[c];
+                        posit[c]=0; // just remove existing ball
+                    }
+                }else if( edtamnt[edtcol-1]>0 ){
+                    posit[c]=edtcol;    // place new ball
+                    edtamnt[edtcol-1]--;    // adjust colour count
+                }
+                display();
+            }
+        }else{
+            edtcol = y+1;
+            display();
+        }
+    }else if(mode!=4){
+        if(mode>=3) mode=1;
+        if( x>=0 && x<7 ){
+            if( posit[c]<0 ) doleft();
+            else if( y<3 ) doup(0);
+            else dodown(0);
+        }else{
+            if( x>=0 && posit[c]<0 ) doright();
+            else if( y<3 ) doup(1);
+            else dodown(1);
+        }
+        display();
+    }
+}
+
+
+function domove(c){
+    if(c==-1) return doleft();          //left
+    else if(c==1 ) return doright();    //right
+    else if(c==-2) return doup(0);      //up left half
+    else if(c==2 ) return dodown(0);    //down left half
+    else if(c==-3) return doup(1);      //up right half
+    else if(c==3 ) return dodown(1);    //down right half
+}
+
+//Play back solution
+var soltimer;
+function solplay(){
+    if(mode==4){
+        // stop the play in progress
+        clearTimeout(soltimer);
+        mode=3;
+        displaybut();
+    }else if(mode!=2){
+        // start play
+        solve();
+        if(mode==3){
+            mode=4;
+            soltimer=setTimeout("playstep()", 200);
+            displaybut();
+        }
+    }
+}
+function playstep(){
+    if(mode>=3){
+        mode=4;
+        solve();
+        if(mode>=3) soltimer=setTimeout("playstep()", 200);
+    }else{
+        displaybut();
+    }
+}
+
+var ord=new Array(
+    3,0, 4,0, 3,1,5,0, 4,1,0,5, 3,2,0,4,
+    0,3,0,2,0,1,0,0,  1,0,1,1,1,2,1,3,1,4);
+function find(cl){
+    var i,c=0;
+    for( i=0; i<ord.length; i+=2){
+        c=ord[i]*14+ord[i+1]+7;
+        if( posit[c]==cl && ord[i]+cl!=6 ) return(c);
+    }
+    return(-1);
+}
+
+function solve(){
+    if(mode==0||mode==1){
+        mode=3;
+        seq.length=0;
+        var i,c,x,y,cl,j,j2;
+
+        //no solution set up yet. Construct it!
+        //save pieces;
+        var back = new Array();
+        for(i=0;i<84;i++) back[i]=posit[i];
+
+        // everything to right;
+        push(1);
+        // rotate whole puzzle - does not affect solution at all
+        grav=0;
+        while(posit[0]==-3) { doup(0); doup(1); }
+        grav=1;
+
+        //put everything in right half
+        push( 3,3,3,3,3,3);
+
+        //pair  up tubes
+        while(posit[13]==-3) push(-3);
+
+        //solve tubes 4, 3 and 2
+        for( cl=4; cl>=2; cl--){
+            c=find(cl);
+            while(c>=0){
+                y=Math.floor(c/14);
+                x=c-y*14;
+                while( x>7 ){
+                    if( y==0 ) {
+                        push(3,-1,-3,3,1,-3);   //B
+                        x++;
+                        if( x==13) {x=7;y=5;}
+                    }
+                    else if( y==1 ){
+                        push(-3,-1,3,-3,1,3);   //A56
+                        x--;
+                    }
+                    else if( y==3 ){
+                        push(3,3,-1,3,-3,1,3,-3,-3,-3); //A23
+                        x--;y++;
+                    }
+                    else if( y==4 ){
+                        push(3,-1,3,-3,1,3,-3,-3);  //A12
+                        x--;y++;
+                    }
+                }
+                while( y+cl!=7 ){
+                    if( y==0 ) {
+                        push(3,-1,-3,3,1,-3);   //B
+                        push(3,-1,-3,3,1,-3);   //B
+                        push(3,-1,-3,3,1,-3);   //B
+                        push(3,-1,-3,3,1,-3);   //B
+                        push(3,-1,-3,3,1,-3);   //B
+                        push(3,-1,-3,3,1,-3);   //B
+                        y=5;
+                    }
+                    else if( y==1 ){
+                        push(-3,-1,3,-3,1,3);   //A56
+                        y--;
+                    }
+                    else if( y==4 ){
+                        push(3,3,-1,3,-3,1,3,-3,-3,-3); //A23
+                        y--;
+                    }
+                    else if( y==5 ){
+                        push(3,-1,3,-3,1,3,-3,-3);  //A12
+                        y--;
+                    }
+                }
+                if( cl==4 ){
+                    push(3,3,3,-1,3,-3,1,3,-3,-3,-3,-3);    //A34
+                    push(3,3,3,-1,3,-3,1,3,-3,-3,-3,-3);    //A34
+                }else if( cl==3 ){
+                    push(3,3,-1,3,-3,1,3,-3,-3,-3); //A23
+                    push(3,3,-1,3,-3,1,3,-3,-3,-3); //A23
+                }else if( cl==2 ){
+                    push(3,-1,3,-3,1,3,-3,-3);  //A12
+                    push(3,-1,3,-3,1,3,-3,-3);  //A12
+                }
+                c=find(cl);
+            }
+        }
+
+        // solve tube 5
+        while( posit[21]!=5 || posit[22]!=5 ||
+                posit[23]!=5 || posit[24]!=5 || posit[25]!=5 ){
+            while( posit[8]!=5 ){
+                push(3,-1,-3,3,1,-3);   //B
+            }
+            push(-3,-1,3,-3,1,3);   //A56
+        }
+
+        // solve tube 1 (and 6)
+        while( posit[77]!=1 ){
+            push(3,-1,-3,3,1,-3);   //B
+        }
+
+        //restore pieces;
+        for(i=0;i<84;i++) posit[i]=back[i];
+    }
+    if(mode>=3){
+        //do next move of prerecorded sequence
+        if(seq.length==0) mode=0;
+        else{
+            // var c=seq.shift();
+            c=pull();
+            domove(c);
+        }
+        display();
+    }
+}
+function pull(){
+    var c=seq[0];
+    for(i=1;i<seq.length;i++) seq[i-1]=seq[i];
+    seq.length--;
+    if(seq.length==0) mode=0;
+    if(c>50) c-=100;
+    return(c);
+}
+function push(){
+    //adds move m times a to movelist, and performs move as well
+    var l;
+    for(i=0;i<push.arguments.length;i++){
+        m=push.arguments[i];
+        if( domove(m) ) m+=100;
+        l=seq.length;
+        seq[l]=m;
+        if( seq[l]==1 || seq[l]==-1 ) {l--; seq.length--;}
+
+        if( l>=4 && seq[l]<50 &&
+                        seq[l]==seq[l-1] && seq[l]==seq[l-2] &&
+                        seq[l]==seq[l-3] && seq[l]==seq[l-4]
+                        ) { seq[l-4]=-seq[l]; seq.length-=4; l-=4; }
+
+        if( l>=1 && seq[l]+seq[l-1]==0 ) { l-=2; seq.length-=2;}
+    }
+}
+
+function help(){
+
+    alert(
+        "Atomic Chaos\n\n"+
+        "The aim is to arrange the balls so that they fill one half\n"+
+        "of the puzzle with each tube a single colour. Clicking on the\n"+
+        "left or right just outside the puzzle, will tilt it so all\n"+
+        "the balls roll in that direction. Clicking on the puzzle\n"+
+        "will move that part up or down depending on whether you click\n"+
+        "on the top three or bottom three tubes.\n"+
+        "\nFurther controls:\n"+
+        "Mix:   This button randomly mixes the puzzle up.\n"+
+        "Reset: Resets the puzzle to the initial position.\n"+
+        "Edit:  Allows you to set up any position. On the right the\n"+
+        "        amount of balls of each colour are shown. Click on\n"+
+        "        any of the positions in the puzzle to place or remove a\n"+
+        "        ball. You can choose which colour to place by clicking on\n"+
+        "        the list on the right. Press the Edit button when finished.\n"+
+        "Solve: This solves the puzzle. Each time you click the but-\n"+
+        "        ton one move is performed until the puzzle is solved.\n"+
+        "Play:  This solves the puzzle, playing through the whole sol-\n"+
+        "        ution. Press the button again to pause.\n"+
+        "Help:  Shows this help screen.\n"
+    );
+}
+
+
+// -->
+</script>
+
+</center></div>
+</body>
+</html>
