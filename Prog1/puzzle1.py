@@ -92,20 +92,42 @@ def drawChaos(window):
                 lCircle.setOutline('white'); rCircle.setOutline('white');
                 lCircle.setFill('white'); rCircle.setFill('white');
             else:
-                lCircle.setOutline('black'); rCircle.setOutline('black');
-                lCircle.setFill(currColor); rCircle.setFill(currColor);
+                lCircle.setOutline('white'); rCircle.setOutline('black');
+                lCircle.setFill('white'); rCircle.setFill(currColor);
             lCircle.draw(window); rCircle.draw(window);
             lBallRow.append(lCircle); rBallRow.append(rCircle);
             
-        ChaosBallList.append(lBallRow); ChaosBallList.append(rBallRow);    
+        ChaosBallList.append(lBallRow); ChaosBallList.append(rBallRow);
+
+    #Possible improvement here... Have UI buttons...
+##    lCWrect = Rectangle(Point(50,300), Point(300,400)); lCWrect.draw(window);
+##    lCCWrect = Rectangle(Point(50,400), Point(300,500)); lCCWrect.draw(window);
+##    rCWrect = Rectangle(Point(400,300), Point(650,400)); rCWrect.draw(window);
+##    rCCWrect = Rectangle(Point(400,400), Point(650,500)); rCCWrect.draw(window);
+    
+    
+    return ChaosBallList
+
+def accountforMovement(userMove):
+    return
+
+def redrawPuzzle(window):
+    return    
 
 def main():
     #Currently just a dummy program that creates a small window with a circle
     window = GraphWin('Atomic Chaos Solution', 780, 500)
-    drawChaos(window)
-
-    
-    window.getMouse()
+    drawList = drawChaos(window)
+    userInput = input('What would you like to do? Select "q" to quit,"h" for help: ')
+    while(userInput != 'q'):
+        if userInput == 'h':
+            print('lcw = left clockwise, rcw = right clockwise')
+            print('lccw = left counterclockwise, rccw = right counterclockwise')
+            print('f = flip, q= quit')
+            userInput = input('New command?')
+        else:
+            accountforMovement(userInput)
+    #window.getMouse()
     window.close()
     #Create 2D array to keep track of the tubes 
     #Draw the initial state of the tubes 
