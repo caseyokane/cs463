@@ -4,6 +4,9 @@
 
 from graphics import *
 
+currBallLocs = []
+
+
 def drawChaos(window):
 
     #Still need to account for making some rectangles smaller, change up corner
@@ -89,12 +92,13 @@ def drawChaos(window):
             rCircle = Circle(Point(currRTLoc.getX()-offset,currRTLoc.getY()),10)
             offset += 60
             if j>i:
-                lCircle.setOutline('white'); rCircle.setOutline('white');
-                lCircle.setFill('white'); rCircle.setFill('white');
+                lCircle.setOutline('white');lCircle.setFill('white');
+                rCircle.setOutline('white');rCircle.setFill('white');
             else:
-                lCircle.setOutline('white'); rCircle.setOutline('black');
-                lCircle.setFill('white'); rCircle.setFill(currColor);
-            lCircle.draw(window); rCircle.draw(window);
+                lCircle.setOutline('white');lCircle.setFill('white'); 
+                rCircle.setOutline('black');rCircle.setFill(currColor);
+                rCircle.draw(window);
+            #lCircle.draw(window); rCircle.draw(window);
             lBallRow.append(lCircle); rBallRow.append(rCircle);
             
         ChaosBallList.append(lBallRow); ChaosBallList.append(rBallRow);
@@ -115,9 +119,27 @@ def redrawPuzzle(window):
     return    
 
 def main():
-    #Currently just a dummy program that creates a small window with a circle
+    #Create a graphics window and set the initial conditions for the board
     window = GraphWin('Atomic Chaos Solution', 780, 500)
     drawList = drawChaos(window)
+    
+    #Initialize Ball Location List which keeps track of the balls in both tubes
+    #First make sure that the left puzzle is blank
+    lPuzzleLocs = [[0] * 6 for i in range(6)]
+    #Then make sure right side matches with initial state
+    rPuzzleLocs = []
+    for i in range (6,0,-1):
+        rTemp = []
+        for j in range(0,6,1):
+            if j<i:
+                rTemp.append(i)
+            else:
+                rTemp.append(0)
+        rPuzzleLocs.append(rTemp)
+    #Finally, when both sides of the puzzle are stored,     
+    currBallLocs.append(lPuzzleLocs); currBallLocs.append(rPuzzleLocs);
+
+    #Start User interraction loop
     userInput = input('What would you like to do? Select "q" to quit,"h" for help: ')
     while(userInput != 'q'):
         if userInput == 'h':
@@ -127,12 +149,11 @@ def main():
             userInput = input('New command?')
         else:
             accountforMovement(userInput)
+
     #window.getMouse()
     window.close()
     #Create 2D array to keep track of the tubes 
-    #Draw the initial state of the tubes 
     #Account for tube movement (left/right/up/down)
-    #Implement user interraction with UI
     #Implement solver function
     #Implement randomizer function
 
