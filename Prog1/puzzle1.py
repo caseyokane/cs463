@@ -4,12 +4,25 @@
 
 from graphics import *
 
+#Global list used to keep track of ball locations
 currBallLocs = []
-
+#Global List to contain tube locations
+tubeLocs = []
+#Global char used to determine if gravity is active towards right or left side
+gravity = 'r'
 
 def drawChaos(window):
 
-    #Still need to account for making some rectangles smaller, change up corner
+    ChaosBallList = []
+    lBallRow = []
+    rBallRow = []
+    lRectRow = []
+    rRectRow = []
+    currLTLoc = 0
+    currRTLoc = 0
+    currColor = 'black'
+
+    #Coordinates for rectangles
     leftT6upCorner = Point(30,50); leftT6lowCorner = Point(390,100);
     leftT5upCorner = Point(90,100); leftT5lowCorner = Point(390,150);
     leftT4upCorner = Point(150,150); leftT4lowCorner = Point(390,200);
@@ -24,6 +37,7 @@ def drawChaos(window):
     rightT2upCorner = Point(390,250); rightT2lowCorner = Point(510,300);
     rightT1upCorner = Point(390,300); rightT1lowCorner = Point(450,350);
 
+    #Coordinates for circles
     leftT6CircleLoc = Point(60,75); leftT5CircleLoc = Point(60, 125);
     leftT4CircleLoc = Point(60,175); leftT3CircleLoc = Point(60, 225);
     leftT2CircleLoc = Point(60,275); leftT1CircleLoc = Point(60, 325);
@@ -32,38 +46,36 @@ def drawChaos(window):
     rightT4CircleLoc = Point(720,175); rightT3CircleLoc = Point(720, 225);
     rightT2CircleLoc = Point(720,275); rightT1CircleLoc = Point(720, 325);
 
+    #Create Rectangular objects
     leftT6 = Rectangle(leftT6upCorner, leftT6lowCorner)
-    leftT6.draw(window)
     leftT5 = Rectangle(leftT5upCorner, leftT5lowCorner)
-    leftT5.draw(window)
     leftT4 = Rectangle(leftT4upCorner, leftT4lowCorner)
-    leftT4.draw(window)
     leftT3 = Rectangle(leftT3upCorner, leftT3lowCorner)
-    leftT3.draw(window)
     leftT2 = Rectangle(leftT2upCorner, leftT2lowCorner)
-    leftT2.draw(window)
     leftT1 = Rectangle(leftT1upCorner, leftT1lowCorner)
-    leftT1.draw(window)
 
     rightT6 = Rectangle(rightT6upCorner, rightT6lowCorner)
-    rightT6.draw(window)
     rightT5 = Rectangle(rightT5upCorner, rightT5lowCorner)
-    rightT5.draw(window)
     rightT4 = Rectangle(rightT4upCorner, rightT4lowCorner)
-    rightT4.draw(window)
     rightT3 = Rectangle(rightT3upCorner, rightT3lowCorner)
-    rightT3.draw(window)
     rightT2 = Rectangle(rightT2upCorner, rightT2lowCorner)
-    rightT2.draw(window)
     rightT1 = Rectangle(rightT1upCorner, rightT1lowCorner)
-    rightT1.draw(window)
 
-    ChaosBallList = []
-    lBallRow = []
-    rBallRow = []
-    currLTLoc = 0
-    currRTLoc = 0
-    currColor = 'black'
+    lRectRow.append(leftT6); lRectRow.append(leftT5); lRectRow.append(leftT4);
+    lRectRow.append(leftT3); lRectRow.append(leftT2); lRectRow.append(leftT1);
+
+    rRectRow.append(rightT6); rRectRow.append(rightT5); rRectRow.append(rightT4);
+    rRectRow.append(rightT3); rRectRow.append(rightT2); rRectRow.append(rightT1);
+
+    #Append the rectangle objects to global array
+    tubeLocs.append(lRectRow); tubeLocs.append(rRectRow);
+
+    leftT6.draw(window); leftT5.draw(window);leftT4.draw(window)
+    leftT3.draw(window); leftT2.draw(window);leftT1.draw(window)
+    
+    rightT6.draw(window); rightT5.draw(window); rightT4.draw(window);
+    rightT3.draw(window); rightT2.draw(window); rightT1.draw(window);
+    
 
     #Primary for loop used to do the initial ball printing and store the obects
     for i in range(6,0,-1):
@@ -112,11 +124,62 @@ def drawChaos(window):
     
     return ChaosBallList
 
-def accountforMovement(userMove):
-    return
-
-def redrawPuzzle(window):
+def redrawPuzzle(userMove, window, drawList):
+    #user
     return    
+
+def accountforMovement(userMove, window, drawList):
+
+    #Clockwise = Down, Counter Clockwise = Up
+
+    #TODO: Consider collections.deque here...
+    #TODO: Rewrite functionality with helper method (split left/right)
+    #Movement for left tube
+    if userMove == 'lcw':
+        tempRow = currBallLocs[0].pop()
+        currBallLocs[0].insert(0,tempRow)
+        #Actually move the rectangle drawings
+        for i in range(0,5,1):
+            tubeLocs[0][i].move(0,50)
+        tubeLocs[0][5].move(0,-250)
+        #Adjust rectangle object arrays 
+        tempRow = tubeLocs[0].pop()
+        tubeLocs[0].insert(0,tempRow)
+        #TODO: HANDLE BALL MOVEMENT
+        
+    elif userMove == 'lccw':
+        tempRow = currBallLocs[0].pop(0)
+        currBallLocs[0].append(tempRow)
+        for i in range(1,6,1):
+            tubeLocs[0][i].move(0,-50)
+        tubeLocs[0][0].move(0,250)
+        tempRow = tubeLocs[0].pop(0)
+        tubeLocs[0].append(tempRow)
+
+    #Movement for right tube
+    elif userMove == 'rcw':
+        tempRow = currBallLocs[1].pop()
+        currBallLocs[1].insert(0,tempRow)
+        for i in range(0,5,1):
+            tubeLocs[1][i].move(0,50)
+        tubeLocs[1][5].move(0,-250)
+        tempRow = tubeLocs[1].pop()
+        tubeLocs[1].insert(0,tempRow)        
+        
+    elif userMove == 'rccw':
+        tempRow = currBallLocs[1].pop(0)
+        currBallLocs[1].append(tempRow)
+        for i in range(1,6,1):
+            tubeLocs[1][i].move(0,-50)
+        tubeLocs[1][0].move(0,250)
+        tempRow = tubeLocs[1].pop(0)
+        tubeLocs[1].append(tempRow)        
+        
+    #Flip Action
+    elif userMove == 'f':
+        return
+
+    return
 
 def main():
     #Create a graphics window and set the initial conditions for the board
@@ -148,7 +211,12 @@ def main():
             print('f = flip, q= quit')
             userInput = input('New command?')
         else:
-            accountforMovement(userInput)
+            accountforMovement(userInput, window, drawList)
+            userInput = input('New Command? Select "q" to quit,"h" for help: ')
+
+    #print("CurrBallLocs: ", currBallLocs)
+    #print("CurrBallLocs[0]: ", currBallLocs[0])
+    #accountforMovement('lcw', window, drawList)
 
     #window.getMouse()
     window.close()
