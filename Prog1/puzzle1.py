@@ -8,16 +8,13 @@ from graphics import *
 currBallLocs = []
 #Global List to contain tube locations
 tubeLocs = []
-#Global char used to determine if gravity is active towards right or left side
-gravity = 'r'
 
 def drawChaos(window):
 
     ChaosBallList = []
-    lBallRow = []
-    rBallRow = []
-    lRectRow = []
-    rRectRow = []
+    lBallRow = []; rBallRow = [];
+    lBallCol = []; rBallCol = [];
+    lRectRow = []; rRectRow = [];
     currLTLoc = 0
     currRTLoc = 0
     currColor = 'black'
@@ -111,9 +108,11 @@ def drawChaos(window):
                 rCircle.setOutline('black');rCircle.setFill(currColor);
                 rCircle.draw(window);
             #lCircle.draw(window); rCircle.draw(window);
-            lBallRow.append(lCircle); rBallRow.append(rCircle);
+            lBallCol.append(lCircle); rBallCol.append(rCircle);
             
-        ChaosBallList.append(lBallRow); ChaosBallList.append(rBallRow);
+        lBallRow.append(lBallCol); rBallRow.append(rBallCol);
+            
+    ChaosBallList.append(lBallRow); ChaosBallList.append(rBallRow);
 
     #Possible improvement here... Have UI buttons...
 ##    lCWrect = Rectangle(Point(50,300), Point(300,400)); lCWrect.draw(window);
@@ -121,14 +120,34 @@ def drawChaos(window):
 ##    rCWrect = Rectangle(Point(400,300), Point(650,400)); rCWrect.draw(window);
 ##    rCCWrect = Rectangle(Point(400,400), Point(650,500)); rCCWrect.draw(window);
     
-    
     return ChaosBallList
 
-def redrawPuzzle(userMove, window, drawList):
-    #user
+def redrawPuzzle(window, drawList):
+    #Dictionary to associate numbers with colors:
+    numColorDict = {1:'white', 2:'black',3:'blue',4:'yellow',5:'green',6:'red'}
+    for tube in range(6):
+        tubeNum = 6-tube
+        circleColor = numColorDict[tubeNum]
+        for lCtr in range(len(currBallLocs[0][tube])):
+            if currBallLocs[0][tube][lCtr] == 0:
+                drawList[0][tube][lCtr-tube].setOutline('white')                
+                drawList[0][tube][lCtr-tube].setFill('white')
+            else:
+                drawList[0][tube][lCtr-tube].setFill(circleColor)
+                print('Left Activated. ', lCtr-tube)
+        for rCtr in range(len(currBallLocs[1][tube])):
+            if currBallLocs[1][tube][rCtr] == 0:
+                drawList[1][tube][rCtr-tube].setOutline('white')
+                drawList[1][tube][rCtr-tube].setFill('white')
+            else:
+                print('color: ', circleColor)
+                drawList[1][tube][rCtr-tube].setFill(circleColor)
+                print('Right Activated. ', currBallLocs[1][tube])
+
+                
     return    
 
-def accountforMovement(userMove, window, drawList):
+def accountforMovement(userMove, window, drawList, gravity):
 
     #Clockwise = Down, Counter Clockwise = Up
 
@@ -146,6 +165,8 @@ def accountforMovement(userMove, window, drawList):
         tempRow = tubeLocs[0].pop()
         tubeLocs[0].insert(0,tempRow)
         #TODO: HANDLE BALL MOVEMENT
+        handleMovement('cw', 'l', gravity)
+        
         
     elif userMove == 'lccw':
         tempRow = currBallLocs[0].pop(0)
@@ -155,6 +176,7 @@ def accountforMovement(userMove, window, drawList):
         tubeLocs[0][0].move(0,250)
         tempRow = tubeLocs[0].pop(0)
         tubeLocs[0].append(tempRow)
+        handleMovement('ccw', 'l', gravity)
 
     #Movement for right tube
     elif userMove == 'rcw':
@@ -164,7 +186,8 @@ def accountforMovement(userMove, window, drawList):
             tubeLocs[1][i].move(0,50)
         tubeLocs[1][5].move(0,-250)
         tempRow = tubeLocs[1].pop()
-        tubeLocs[1].insert(0,tempRow)        
+        tubeLocs[1].insert(0,tempRow)
+        handleMovement('cw', 'r', gravity)
         
     elif userMove == 'rccw':
         tempRow = currBallLocs[1].pop(0)
@@ -173,33 +196,90 @@ def accountforMovement(userMove, window, drawList):
             tubeLocs[1][i].move(0,-50)
         tubeLocs[1][0].move(0,250)
         tempRow = tubeLocs[1].pop(0)
-        tubeLocs[1].append(tempRow)        
-        
-    #Flip Action
+        tubeLocs[1].append(tempRow)
+        handleMovement('cw', 'r', gravity)
+       
+    #Flip Action - used to flip the puzzle from one side to the other
     elif userMove == 'f':
-        return
+        #Determine movement based on which way gravity is acting
+        if gravity == 'l':
+            handleMovement(userMove, 'r', gravity)
+            gravity = 'r'
+        else:
+            handleMovement(userMove, 'l', gravity)
+            gravity = 'l'
 
-    return
+    #Status move, for debugging purposes    
+    elif userMove == 's':
+        print("CurrBallLocs[0]: ", currBallLocs[0])
+        print("CurrBallLocs[1]: ", currBallLocs[1])
+
+    redrawPuzzle(window, drawList)
+    return gravity
+
+def handleMovement(userMove, oriented, gravity):
+
+    #Push and pull sides are used to determine which side of the puzzle the
+    #balls are moving. Default is that the right side is bottom 
+##    pullSide = 0; pushSide = 1;
+##    if gravity == 'l':
+##        pullSide = 1; pushSide = 0
+
+    #Flip motion is preformed based on the current state of gravity
+    #if userMove == 'f':
+        pullSide = 0; pushSide = 1
+        #gravity is passed as oriented parameter
+        if gravity == 'l':
+            pullSide = 1; pushSide = 0
+            
+        for tube in range(0,6,1):
+            #Position of where nonzero balls begin in the right tube
+            pos = 0
+            #Find the number of positions until a nonzero value occurs
+            while currBallLocs[pushSide][tube][pos] == 0:
+                pos+=1
+
+            #variable used to keep track of the balls in a tube     
+            remainingNonZeros = len(currBallLocs[pushSide][tube]) - pos
+            for i in range(0, len(currBallLocs[pullSide][tube]), 1):
+                if currBallLocs[pullSide][tube][i] == 0:
+                    #For each element in the right, check that it can go in the left 
+                    if pos < remainingNonZeros:
+                        currBallLocs[pullSide][tube][i] = currBallLocs[pushSide][tube].pop(0)
+                        #update push tube 
+                        currBallLocs[pushSide][tube].append(0)
+                        pos+=1
+
+##    #If flip is not being preformed, then a rotation is
+##    else:
+##        #After tubes are rotated, check that gravity handles any balls that
+##        #should fall
+##        for tube in range(6):
+##            for i in range(0, len(currBallLocs[pullSide][tube]), 1):
+##                if currBallLocs[pullSide][tube][i] == 0:
+                    
+        
+
+            
 
 def main():
     #Create a graphics window and set the initial conditions for the board
     window = GraphWin('Atomic Chaos Solution', 780, 500)
     drawList = drawChaos(window)
+
+    #char used to determine if gravity is active towards right or left side
+    gravity = 'r'
     
     #Initialize Ball Location List which keeps track of the balls in both tubes
-    #First make sure that the left puzzle is blank
-    lPuzzleLocs = [[0] * 6 for i in range(6)]
-    #Then make sure right side matches with initial state
-    rPuzzleLocs = []
+    lPuzzleLocs = []
+    rPuzzleLocs = []    
     for i in range (6,0,-1):
+        lTemp = []
         rTemp = []
-        for j in range(0,6,1):
-            if j<i:
-                rTemp.append(i)
-            else:
-                rTemp.append(0)
-        rPuzzleLocs.append(rTemp)
-    #Finally, when both sides of the puzzle are stored,     
+        for j in range(0,i,1):
+            lTemp.append(0); rTemp.append(i)
+        lPuzzleLocs.append(lTemp); rPuzzleLocs.append(rTemp)
+    #Finally, when both sides of the puzzle are stored, append them to the list    
     currBallLocs.append(lPuzzleLocs); currBallLocs.append(rPuzzleLocs);
 
     #Start User interraction loop
@@ -211,18 +291,15 @@ def main():
             print('f = flip, q= quit')
             userInput = input('New command?')
         else:
-            accountforMovement(userInput, window, drawList)
+            gravity = accountforMovement(userInput, window, drawList,gravity)
             userInput = input('New Command? Select "q" to quit,"h" for help: ')
 
     #print("CurrBallLocs: ", currBallLocs)
-    #print("CurrBallLocs[0]: ", currBallLocs[0])
     #accountforMovement('lcw', window, drawList)
 
     #window.getMouse()
     window.close()
-    #Create 2D array to keep track of the tubes 
     #Account for tube movement (left/right/up/down)
-    #Implement solver function
     #Implement randomizer function
 
 
