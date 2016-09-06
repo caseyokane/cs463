@@ -125,18 +125,21 @@ def drawChaos(window):
 def redrawPuzzle(window, drawList):
     print('Left:', currBallLocs[0]); print('Right:',currBallLocs[1]);
     for tube in range(6):
-        tubeNum = 6-tube
-        circleColor = numColorDict[tubeNum]
+        lTubeNum = 6-(len(currBallLocs[0][tube])-1)
+        rTubeNum = 6-(len(currBallLocs[1][tube])-1)
+        circleColor = numColorDict[6-tube]
         for lCtr in range(len(currBallLocs[0][tube])):
+            drawLoc = lTubeNum - lCtr
             if currBallLocs[0][tube][lCtr] == 0:
                 drawList[0][tube][lCtr-tubeNum].setOutline('white')                
                 drawList[0][tube][lCtr-tubeNum].setFill('white')
             else:
                 drawList[0][tube][lCtr-tubeNum].setFill(circleColor)
                 if circleColor == 'white':
-                    drawList[0][tube][lCtr-tubeNum].setOutline('black')
+                    drawList[0][tube][drawLoc].setOutline('black')
                     
         for rCtr in range(len(currBallLocs[1][tube])):
+            drawLoc = -rTubeNum + rCtr
             if currBallLocs[1][tube][rCtr] == 0:
                 drawList[1][tube][rCtr-tubeNum].setOutline('white')
                 drawList[1][tube][rCtr-tubeNum].setFill('white')
@@ -150,7 +153,7 @@ def redrawPuzzle(window, drawList):
 def handleMovement(userMove, oriented, gravity):
 
     #First check that if gravity is on same side as rotation, don't flip
-    if (userMove != 'f') & (oriented == gravity):
+    if (userMove != 'f') &(oriented == gravity):
         return
 
     #Push and pull sides are used to determine which side of the puzzle the
@@ -191,7 +194,7 @@ def handleMovement(userMove, oriented, gravity):
                     
  
 
-def accountforMovement(userMove, window, drawList, gravity):
+def moveFrmInput(userMove, window, drawList, gravity):
 
     #Clockwise = Down, Counter Clockwise = Up
 
@@ -293,11 +296,11 @@ def main():
             print('f = flip, q= quit')
             userInput = input('New command?')
         else:
-            gravity = accountforMovement(userInput, window, drawList,gravity)
+            gravity = moveFrmInput(userInput, window, drawList,gravity)
             userInput = input('New Command? Select "q" to quit,"h" for help: ')
 
     #print("CurrBallLocs: ", currBallLocs)
-    #accountforMovement('lcw', window, drawList)
+    #moveFrmInput('lcw', window, drawList)
 
     #window.getMouse()
     window.close()
