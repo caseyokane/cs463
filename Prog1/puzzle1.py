@@ -8,12 +8,13 @@ from graphics import *
 currBallLocs = []
 #Global List to contain tube locations
 tubeLocs = []
+#Dictionary to associate numbers with colors:
+numColorDict = {1:'white', 2:'black',3:'blue',4:'yellow',5:'green',6:'red'}
 
 def drawChaos(window):
 
-    ChaosBallList = []
+    drawList = []
     lBallRow = []; rBallRow = [];
-    lBallCol = []; rBallCol = [];
     lRectRow = []; rRectRow = [];
     currLTLoc = 0
     currRTLoc = 0
@@ -72,47 +73,46 @@ def drawChaos(window):
     
     rightT6.draw(window); rightT5.draw(window); rightT4.draw(window);
     rightT3.draw(window); rightT2.draw(window); rightT1.draw(window);
-    
 
-    #Primary for loop used to do the initial ball printing and store the obects
+    gravMsg = Text(Point(390,400), 'Gravity = Right Side');
+    gravMsg.draw(window)
+    
+    #Primary for loop used to do the initial ball printing and store the objects
     for i in range(6,0,-1):
+        lBallCol = []; rBallCol = [];
+        
         if i == 6:
             currLTLoc = leftT6CircleLoc; currRTLoc = rightT6CircleLoc;
-            currColor = 'red'
         elif i == 5:
             currLTLoc = leftT5CircleLoc; currRTLoc = rightT5CircleLoc;
-            currColor = 'green'
         elif i == 4:
             currLTLoc = leftT4CircleLoc; currRTLoc = rightT4CircleLoc;
-            currColor = 'yellow'
         elif i == 3:
             currLTLoc = leftT3CircleLoc; currRTLoc = rightT3CircleLoc;
-            currColor = 'blue'
         elif i == 2:
             currLTLoc = leftT2CircleLoc; currRTLoc = rightT2CircleLoc;
-            currColor = 'black'
         else:
             currLTLoc = leftT1CircleLoc; currRTLoc = rightT1CircleLoc;
-            currColor = 'white'
+            
+        currColor = numColorDict[i]
 
         offset = 0    
-        for j in range (6,0,-1):
+        for j in range (6, 0 ,-1):
             lCircle = Circle(Point(currLTLoc.getX()+offset,currLTLoc.getY()),10)
             rCircle = Circle(Point(currRTLoc.getX()-offset,currRTLoc.getY()),10)
             offset += 60
+            lCircle.setOutline('white');lCircle.setFill('white');
             if j>i:
-                lCircle.setOutline('white');lCircle.setFill('white');
                 rCircle.setOutline('white');rCircle.setFill('white');
             else:
-                lCircle.setOutline('white');lCircle.setFill('white'); 
                 rCircle.setOutline('black');rCircle.setFill(currColor);
-                rCircle.draw(window);
-            #lCircle.draw(window); rCircle.draw(window);
+            
+            lCircle.draw(window); rCircle.draw(window);
             lBallCol.append(lCircle); rBallCol.append(rCircle);
             
         lBallRow.append(lBallCol); rBallRow.append(rBallCol);
             
-    ChaosBallList.append(lBallRow); ChaosBallList.append(rBallRow);
+    drawList.append(lBallRow);drawList.append(rBallRow);drawList.append(gravMsg)
 
     #Possible improvement here... Have UI buttons...
 ##    lCWrect = Rectangle(Point(50,300), Point(300,400)); lCWrect.draw(window);
@@ -120,32 +120,76 @@ def drawChaos(window):
 ##    rCWrect = Rectangle(Point(400,300), Point(650,400)); rCWrect.draw(window);
 ##    rCCWrect = Rectangle(Point(400,400), Point(650,500)); rCCWrect.draw(window);
     
-    return ChaosBallList
+    return drawList
 
 def redrawPuzzle(window, drawList):
-    #Dictionary to associate numbers with colors:
-    numColorDict = {1:'white', 2:'black',3:'blue',4:'yellow',5:'green',6:'red'}
+    print('Left:', currBallLocs[0]); print('Right:',currBallLocs[1]);
     for tube in range(6):
         tubeNum = 6-tube
         circleColor = numColorDict[tubeNum]
         for lCtr in range(len(currBallLocs[0][tube])):
             if currBallLocs[0][tube][lCtr] == 0:
-                drawList[0][tube][lCtr-tube].setOutline('white')                
-                drawList[0][tube][lCtr-tube].setFill('white')
+                drawList[0][tube][lCtr-tubeNum].setOutline('white')                
+                drawList[0][tube][lCtr-tubeNum].setFill('white')
             else:
-                drawList[0][tube][lCtr-tube].setFill(circleColor)
-                print('Left Activated. ', lCtr-tube)
+                drawList[0][tube][lCtr-tubeNum].setFill(circleColor)
+                if circleColor == 'white':
+                    drawList[0][tube][lCtr-tubeNum].setOutline('black')
+                    
         for rCtr in range(len(currBallLocs[1][tube])):
             if currBallLocs[1][tube][rCtr] == 0:
-                drawList[1][tube][rCtr-tube].setOutline('white')
-                drawList[1][tube][rCtr-tube].setFill('white')
+                drawList[1][tube][rCtr-tubeNum].setOutline('white')
+                drawList[1][tube][rCtr-tubeNum].setFill('white')
             else:
-                print('color: ', circleColor)
-                drawList[1][tube][rCtr-tube].setFill(circleColor)
-                print('Right Activated. ', currBallLocs[1][tube])
+                drawList[1][tube][rCtr-tubeNum].setFill(circleColor)
+                if circleColor == 'white':
+                    drawList[1][tube][rCtr-tubeNum].setOutline('black')
+               
+    return 
 
-                
-    return    
+def handleMovement(userMove, oriented, gravity):
+
+    #First check that if gravity is on same side as rotation, don't flip
+    if (userMove != 'f') & (oriented == gravity):
+        return
+
+    #Push and pull sides are used to determine which side of the puzzle the
+    #balls are moving. Default is that the right side is bottom 
+
+    #Flip motion is preformed based on the current state of gravity
+    else:
+        pullSide = 0; pushSide = 1
+        #gravity is passed as oriented parameter
+        if gravity == 'l':
+            pullSide = 1; pushSide = 0
+            
+        for tube in range(0,6,1):
+            #Position of where nonzero balls begin in the right tube
+            pos = 0
+            #Find the number of positions until a nonzero value occurs
+            while currBallLocs[pushSide][tube][pos] == 0:
+                pos+=1
+
+            #variable used to keep track of the balls in a tube     
+            remainingNonZeros = len(currBallLocs[pushSide][tube]) - pos
+            for i in range(0, len(currBallLocs[pullSide][tube]), 1):
+                if currBallLocs[pullSide][tube][i] == 0:
+                    #For each element in the right, check that it can go in the left 
+                    if pos < remainingNonZeros:
+                        currBallLocs[pullSide][tube][i] = currBallLocs[pushSide][tube].pop(0)
+                        #update push tube 
+                        currBallLocs[pushSide][tube].append(0)
+                        pos+=1
+
+##    #If flip is not being preformed, then a rotation is
+##    else:
+##        #After tubes are rotated, check that gravity handles any balls that
+##        #should fall
+##        for tube in range(6):
+##            for i in range(0, len(currBallLocs[pullSide][tube]), 1):
+##                if currBallLocs[pullSide][tube][i] == 0:
+                    
+ 
 
 def accountforMovement(userMove, window, drawList, gravity):
 
@@ -204,9 +248,11 @@ def accountforMovement(userMove, window, drawList, gravity):
         #Determine movement based on which way gravity is acting
         if gravity == 'l':
             handleMovement(userMove, 'r', gravity)
+            drawList[2].setText('Gravity = Right Side')
             gravity = 'r'
         else:
             handleMovement(userMove, 'l', gravity)
+            drawList[2].setText('Gravity = Left Side')
             gravity = 'l'
 
     #Status move, for debugging purposes    
@@ -215,51 +261,7 @@ def accountforMovement(userMove, window, drawList, gravity):
         print("CurrBallLocs[1]: ", currBallLocs[1])
 
     redrawPuzzle(window, drawList)
-    return gravity
-
-def handleMovement(userMove, oriented, gravity):
-
-    #Push and pull sides are used to determine which side of the puzzle the
-    #balls are moving. Default is that the right side is bottom 
-##    pullSide = 0; pushSide = 1;
-##    if gravity == 'l':
-##        pullSide = 1; pushSide = 0
-
-    #Flip motion is preformed based on the current state of gravity
-    #if userMove == 'f':
-        pullSide = 0; pushSide = 1
-        #gravity is passed as oriented parameter
-        if gravity == 'l':
-            pullSide = 1; pushSide = 0
-            
-        for tube in range(0,6,1):
-            #Position of where nonzero balls begin in the right tube
-            pos = 0
-            #Find the number of positions until a nonzero value occurs
-            while currBallLocs[pushSide][tube][pos] == 0:
-                pos+=1
-
-            #variable used to keep track of the balls in a tube     
-            remainingNonZeros = len(currBallLocs[pushSide][tube]) - pos
-            for i in range(0, len(currBallLocs[pullSide][tube]), 1):
-                if currBallLocs[pullSide][tube][i] == 0:
-                    #For each element in the right, check that it can go in the left 
-                    if pos < remainingNonZeros:
-                        currBallLocs[pullSide][tube][i] = currBallLocs[pushSide][tube].pop(0)
-                        #update push tube 
-                        currBallLocs[pushSide][tube].append(0)
-                        pos+=1
-
-##    #If flip is not being preformed, then a rotation is
-##    else:
-##        #After tubes are rotated, check that gravity handles any balls that
-##        #should fall
-##        for tube in range(6):
-##            for i in range(0, len(currBallLocs[pullSide][tube]), 1):
-##                if currBallLocs[pullSide][tube][i] == 0:
-                    
-        
-
+    return gravity       
             
 
 def main():
