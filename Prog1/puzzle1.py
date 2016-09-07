@@ -125,73 +125,137 @@ def drawChaos(window):
 def redrawPuzzle(window, drawList):
     print('Left:', currBallLocs[0]); print('Right:',currBallLocs[1]);
     for tube in range(6):
-        lTubeNum = 6-(len(currBallLocs[0][tube])-1)
-        rTubeNum = 6-(len(currBallLocs[1][tube])-1)
+        lTubeNum = 6-len(currBallLocs[0][tube])
+        rTubeNum = 6-len(currBallLocs[1][tube])
         circleColor = numColorDict[6-tube]
         for lCtr in range(len(currBallLocs[0][tube])):
-            drawLoc = lTubeNum - lCtr
+            drawLoc = lTubeNum + lCtr
             if currBallLocs[0][tube][lCtr] == 0:
-                drawList[0][tube][lCtr-tubeNum].setOutline('white')                
-                drawList[0][tube][lCtr-tubeNum].setFill('white')
+                drawList[0][tube][drawLoc].setOutline('white')                
+                drawList[0][tube][drawLoc].setFill('white')
             else:
-                drawList[0][tube][lCtr-tubeNum].setFill(circleColor)
+                drawList[0][tube][drawLoc].setFill(circleColor)
                 if circleColor == 'white':
                     drawList[0][tube][drawLoc].setOutline('black')
                     
         for rCtr in range(len(currBallLocs[1][tube])):
-            drawLoc = -rTubeNum + rCtr
+            drawLoc = rCtr + tube
             if currBallLocs[1][tube][rCtr] == 0:
-                drawList[1][tube][rCtr-tubeNum].setOutline('white')
-                drawList[1][tube][rCtr-tubeNum].setFill('white')
+                drawList[1][tube][drawLoc].setOutline('white')
+                drawList[1][tube][drawLoc].setFill('white')
             else:
-                drawList[1][tube][rCtr-tubeNum].setFill(circleColor)
+                drawList[1][tube][drawLoc].setFill(circleColor)
                 if circleColor == 'white':
-                    drawList[1][tube][rCtr-tubeNum].setOutline('black')
+                    drawList[1][tube][drawLoc].setOutline('black')
                
     return 
 
 def handleMovement(userMove, oriented, gravity):
 
-    #First check that if gravity is on same side as rotation, don't flip
-    if (userMove != 'f') &(oriented == gravity):
-        return
-
     #Push and pull sides are used to determine which side of the puzzle the
     #balls are moving. Default is that the right side is bottom 
+    pullSide = 1; pushSide = 0;
+    #gravity is passed as oriented parameter
+    if gravity == 'l':
+        pullSide = 0; pushSide = 1;
 
-    #Flip motion is preformed based on the current state of gravity
-    else:
-        pullSide = 0; pushSide = 1
-        #gravity is passed as oriented parameter
-        if gravity == 'l':
-            pullSide = 1; pushSide = 0
+
+    #First check that if gravity is on same side as rotation, don't flip
+    if (userMove != 'f') & (oriented == gravity):
+        return
+
+    #Account for rotation movements
+    elif (userMove == 'cw') | (userMove == 'ccw'):
+        for tube in range(6):
+            pullLen = len(currBallLocs[pullSide][tube])
+            #End position of the pull tube
+            pos = pullLen -1
             
-        for tube in range(0,6,1):
-            #Position of where nonzero balls begin in the right tube
-            pos = 0
-            #Find the number of positions until a nonzero value occurs
-            while currBallLocs[pushSide][tube][pos] == 0:
-                pos+=1
+            #Find the number of zeros that can be filled with balls
+            numZeros = 0
+            while currBallLocs[pullSide][tube][pos] == 0:
+                pos-=1; numZeros+=1;
 
-            #variable used to keep track of the balls in a tube     
-            remainingNonZeros = len(currBallLocs[pushSide][tube]) - pos
-            for i in range(0, len(currBallLocs[pullSide][tube]), 1):
-                if currBallLocs[pullSide][tube][i] == 0:
-                    #For each element in the right, check that it can go in the left 
-                    if pos < remainingNonZeros:
+            #If there is at least one nonzero position check to pull over balls
+            if numZeros != 0:
+                #remainingNonZeros = len(currBallLocs[pushSide][tube]) - pos
+                for i in range(pullLen):
+                    #If a position with 0 is reached, then replace it and decrement numZeros
+                    if i == (pullLen-numZeros):
+                        #For each element in the right, check that it can go in the left 
                         currBallLocs[pullSide][tube][i] = currBallLocs[pushSide][tube].pop(0)
                         #update push tube 
                         currBallLocs[pushSide][tube].append(0)
-                        pos+=1
+                        numZeros-=1
+    
 
-##    #If flip is not being preformed, then a rotation is
-##    else:
-##        #After tubes are rotated, check that gravity handles any balls that
-##        #should fall
-##        for tube in range(6):
-##            for i in range(0, len(currBallLocs[pullSide][tube]), 1):
-##                if currBallLocs[pullSide][tube][i] == 0:
+    #Flip motion is preformed based on the current state of gravity
+    else:           
+        for tube in range(6):
+##            #Position of where nonzero balls begin in the right tube
+##            pos = 0
+##            #Find the number of positions until a nonzero value occurs
+##            while currBallLocs[pullSide][tube][pos] == 0:
+##                pos+=1
+##                
+##            currBallLocs[pushSide][tube].reverse()
+##
+##            #variable used to keep track of the balls in a tube     
+##            remainingNonZeros = len(currBallLocs[pullSide][tube]) - pos
+##            for i in range(len(currBallLocs[pushSide][tube])):
+##                if currBallLocs[pushSide][tube][i] == 0:
+##                    #For each element in the right, check that it can go in the left 
+##                    if pos < remainingNonZeros:
+##                        currBallLocs[pushSide][tube][i] = currBallLocs[pullSide][tube].pop(0)                        
+##                        #update push tube 
+##                        currBallLocs[pullSide][tube].append(0)
+##                        pos+=1
+
+
+            #Reverse the push side of the list, so those balls are affected by gravity
+            currBallLocs[pushSide][tube].reverse()
+
+            pullLen = len(currBallLocs[pullSide][tube])-1
+            #End position of the pull tube
+            pos = pullLen
+            
+            #Find the number of zeros that can be filled with balls
+            numZeros = 0
+            while currBallLocs[pullSide][tube][pos] == 0:
+                pos-=1; numZeros+=1;
+            #If there is at least one nonzero position check to push over balls
+            if numZeros != 0:
+                for i in range(len(currBallLocs[pushSide][tube])-1, 0, -1):
+                    #If a position with 0 is reached, then replace it and decrement numZeros
+                    if currBallLocs[pushSide][tube][i] == 0:
+                        #For each element in the right, check that it can go in the left 
+                        currBallLocs[pushSide][tube][i] = currBallLocs[pullSide][tube].pop(pullLen-numZeros)
+                        #update push tube 
+                        currBallLocs[pullSide][tube].append(0)
+                        numZeros+=1
+                currBallLocs[pullSide][tube].reverse()
+                
+            else:
+            #Position of where nonzero balls begin in the right tube
+                pos = 0
+                #Find the number of positions until a nonzero value occurs
+                while currBallLocs[pullSide][tube][pos] == 0:
+                    pos+=1
                     
+                currBallLocs[pushSide][tube].reverse()
+
+                #variable used to keep track of the balls in a tube     
+                remainingNonZeros = len(currBallLocs[pullSide][tube]) - pos
+                for i in range(len(currBallLocs[pushSide][tube])):
+                    if currBallLocs[pushSide][tube][i] == 0:
+                        #For each element in the right, check that it can go in the left 
+                        if pos < remainingNonZeros:
+                            currBallLocs[pushSide][tube][i] = currBallLocs[pullSide][tube].pop(0)                        
+                            #update push tube 
+                            currBallLocs[pullSide][tube].append(0)
+                            pos+=1
+
+
  
 
 def moveFrmInput(userMove, window, drawList, gravity):
@@ -262,8 +326,12 @@ def moveFrmInput(userMove, window, drawList, gravity):
     elif userMove == 's':
         print("CurrBallLocs[0]: ", currBallLocs[0])
         print("CurrBallLocs[1]: ", currBallLocs[1])
+        
+    print("CurrBallLocs[0]: ", currBallLocs[0])
+    print("CurrBallLocs[1]: ", currBallLocs[1])
 
-    redrawPuzzle(window, drawList)
+    #redrawPuzzle(window, drawList)
+    
     return gravity       
             
 
@@ -286,6 +354,9 @@ def main():
         lPuzzleLocs.append(lTemp); rPuzzleLocs.append(rTemp)
     #Finally, when both sides of the puzzle are stored, append them to the list    
     currBallLocs.append(lPuzzleLocs); currBallLocs.append(rPuzzleLocs);
+
+    print("CurrBallLocs[0]: ", currBallLocs[0])
+    print("CurrBallLocs[1]: ", currBallLocs[1])
 
     #Start User interraction loop
     userInput = input('What would you like to do? Select "q" to quit,"h" for help: ')
