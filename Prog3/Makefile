@@ -3,8 +3,8 @@ CC = g++
 CFLAGS = -Wall -g
 INCLUDES = -I.
 LIBS = -lpthread
-SRCS = DPLL.cpp   
-OBJS = DPLL.o   
+SRCS = main.cpp   
+OBJS = main.o   
 
 SATassign = SATassignment
 LDFLAGS = -ldl
