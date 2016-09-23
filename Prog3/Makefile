@@ -1,31 +1,22 @@
 # A basic Makefile 
-CC = gcc
+CC = g++
 CFLAGS = -Wall -g
 INCLUDES = -I.
 LIBS = -lpthread
-SRCS = csapp.c p3extra.c  
-OBJS = csapp.o p3extra.o  
+SRCS = DPLL.cpp   
+OBJS = DPLL.o   
 
-CSRCS = $(SRCS) rrshClient.c
-SSRCS = $(SRCS) rrshServer.c
-COBJS = $(OBJS) rrshClient.o
-SOBJS = $(OBJS) rrshServer.o
-
-RRSHSERVER = rrsh-server
-RRSHCLIENT = rrsh-client
+SATassign = SATassignment
 LDFLAGS = -ldl
 
-all:	$(RRSHSERVER) $(RRSHCLIENT)
+all:	$(SATassign)
 
-$(RRSHSERVER):$(SOBJS) 
-	$(CC)  -o $(RRSHSERVER) $(CFLAGS) $(INCLUDES) $(SOBJS) $(LIBS) $(LDFLAGS) 
-
-$(RRSHCLIENT):$(COBJS)
-	$(CC)  -o $(RRSHCLIENT) $(CFLAGS) $(INCLUDES) $(COBJS) $(LIBS) $(LDFLAGS) 
+$(SATassign):$(OBJS) 
+	$(CC)  -o $(SATassign) $(CFLAGS) $(INCLUDES) $(OBJS) $(LIBS) $(LDFLAGS) 
 
 .c.o: 
 	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
 
 clean:
-	$(RM) *.o *~ $(RRSHSERVER) $(RRSHCLIENT)
+	$(RM) *.o *~ $(SATassign)
 
