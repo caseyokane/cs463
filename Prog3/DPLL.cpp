@@ -1,6 +1,6 @@
+#include "DPLL.h"
 
-
-int dpll(char[] a_Clauses){
+int DPLL(vector<int> v_Clauses){
 
     //If a_Clauses  is a consistent set of literals
         //return true
