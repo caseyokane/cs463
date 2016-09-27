@@ -15,3 +15,16 @@ int DPLL(vector<int> v_Clauses){
 
     return 0;
 }
+
+//Used to set the l clause to True and remove clasues with literals with ~l
+int unitPropagate(){
+
+    
+    return 0;
+}
+
+//If l occurs in clause, remove that clause
+int literalAssign(){
+
+    return 0;
+}
