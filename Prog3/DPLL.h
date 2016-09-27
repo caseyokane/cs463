@@ -13,12 +13,14 @@ using std::string;
 
 //clause container, received from command line args
 vector<vector<int>> v_clContainer;
+//clause results, contain integer (-1/1) if clause is true or false
+vector<int> v_clRslts;
 
 
-
-int DPLL(vector<int> v_Clauses);
+bool DPLL(vector<int> v_Clauses);
 int unitPropagate();
 int literalAssign();
-bool locatePureLit();
+bool locPureLit(vector<int>::iterator it_Lit);
+int verifyDPLL();
 
 #endif
