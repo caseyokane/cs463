@@ -1,105 +1,15 @@
 #include "DPLL.h"
 
-bool DPLL(){
-
-    //Use an iterator to iterate through the literals of each clause 
-    vector<int>::iterator it_Lit; 
-    int iCl, iVar, iSign; 
-    
-
-    //If a_Clauses  is a consistent set of literals
-        //return true
-    //If a_Clauses contains an empty clause
-        //return false
-    //For every unit clause l in a_Clauses 
-        //aClauses = unitPropagate(l, a_Clauses);
-    //For every pure literal in a_Clauses 
-        //aClauses = literalSssign(l, a_Clauses)
-    //l = choose-literal(a_Clauses);
-    //return (dpll(a_Clauses & l) & dpll(a_Clauses  & ~l));
-
-    //Receieve minimized index from a set of literals
-    iCl = unitPropagate(it_Lit, numClauses);
-
-    //check for a consistent set of literals
-    if(v_clRslts[iCl] == 0){
-        return true;
-    }
-
-    //Check for empty clause
-    else if(v_clRslts[iCl] < 0){
-        return false;
-    }
-
-
-    //Find pure literals 
-    else if(locPureLit(it_Lit)){
-        //If pure literal is found save it's remember the variable and the sign  
-        iVar = abs(*it_Lit);
-        iSign = (*it_Lit > 0);
-
-        //Assign the pure literal to simplify the equation and call DPLL again
-        v_clVars[iVar] = iSign;
-        isValid = DPLL();
-        
-    }
-
-    //Find unit clauses 
-    else if(v_clRslts[iCl] > 0){
-        //TODO: Compress conditional statements to singular one 
-        iVar = abs(*it_it);
-        iSign = (*it_Lit > 0); 
-            
-        v_clVars[iVar] = iSign;
-
-        //If the result value is a 1, then a unit clause is found
-        if(v_clRslts[iCl] == 1){
-            //If unit clause is found then call DPLL again
-            isValid = DPLL();
-        }
-
-        //If not a unit clause and DPLL isn't satisfied, find complement of var 
-        else{
-            isValid = DPLL();
-
-            if(isValid == false){
-                v_clVars[iVar] = 1 - iSign;
-                isValid = DPLL();
-            }
-
-        }
-
-        //If not a unit clause and still not valid, set the symbol = -1
-        if(isValid == false){
-            v_clVars[iVar] = -1;
-        }
-    }
-
-    return isValid;
-}
 
 //Used to set the l clause to True and remove clasues with literals with ~l
 //Counts T literals for each clause and stores values. Fills pure vector with 
 //literals
+
+//TODO: Fill out these functions`
 int unitPropagate(vector<int>::iterator &it_Lit, numClauses){
-
-    int iClause;
-    bool isSat = false;
-    vector<int>::iterator it_Prop;
-
-    //Iterate through each of the clauses 
-    for(iClause = 0; iClause < numClauses; iClause++){
-        
-        //iterate over each of the vars in the clause 
-        while( (it_Prop != v_clContainer[iClause].end() ) && (isSat != true) ){
-        
-        }
-
-         
-    }
-    
     return 0;
 }
+
 
 bool locPureLit(vector<int>::iterator & li_it){
     return true;
@@ -111,8 +21,75 @@ int literalAssign(){
     return 0;
 }
 
-int verifyDPLL(){
-    return 0;
+bool DPLL(){
+
+    //Use an iterator to iterate through each clause of the container
+    vector<vector<int>>::iterator it_Cl;
+    //iterate through the literals of each clause and Unit Clauses
+    vector<int>::iterator it_Lit, it_Unit; 
+
+    bool isConsistent = true;
+    //int iCl, iVar, iSign; 
+    
+
+    for(it_Cl == v_clauses.begin(); it_Cl != v_clauses.end(); it_Cl++){
+
+        //vector to keep track of consistent literals
+        vector<int> v_consistLits;
+
+        for(it_Lit = it_Cl->begin(); it_Lit != it_Cl->end(); it_Lit++){
+
+            //TODO: Stuff with consistent literals here
+
+        }
+    
+        //ALG: If a_Clauses contains an empty clause return false
+        if(*it_Cl.size() == 0){
+            return false
+        }
+
+        //If unit clause (clause size 1 is found, push the position onto the 
+        //unit clause position vector
+        if(*it_Cl.size() == 1){
+            //index found as distance from list begin to iterator pos
+            v_UnitClause.push_back(std::distance(v_clauses,begin(), it_Cl));
+        }
+
+    }
+
+    //ALG: If a_Clauses  is a consistent set of literals return true
+    if(isConsistent){
+        return true;
+    }    
+
+    //For every unit clause l in a_Clauses,aClauses = unitPropagate(l, a_Clauses);
+    for(it_Unit = v_UnitClause.begin(); it_Unit != v_UnitClause.end(); it_Unit++){
+        v_clauses = unitPropagate(v_clauses[*it_Unit]);
+    }
+    
+    //For every pure literal in a_Clauses use literalSssign(l, a_Clauses)
+    while(locPureFit){
+        //TODO: Create pureLiteralAssign function
+        v_clauses = pureLiteralAssign()
+    }
+
+    //l = choose-literal(a_Clauses);
+    //TODO: Create method that will randomly select one of the remaining literals
+    //return (dpll(a_Clauses & l) & dpll(a_Clauses  & ~l));
+    //TODO: v_Clauses so that it isn't global anywmore, to handle asynchronus
+    //recursion? Interesting question for Greg
+
 }
 
+vector<int> DPLLhandle(vector<vector<int>> SATform){
 
+    //convert SATform to a vector of clauses (vector of ints)
+
+    //if the DPLL call returns true return assignment 
+    if(DPLL()){
+        return v_clauses;
+    }
+    
+    //Return NULL for failure otherwise
+    return NULL; 
+}

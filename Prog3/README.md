@@ -15,7 +15,10 @@ assignment for boolean formulas in CNF. Options include:
 
 ###Included Files:
 * Makefile
-* Others included here... 
+* Source and Header files for 
+    * DPLL
+    * walkSAT
+    * hillClimbing 
 
 ###Executing Code:
 1. Cast 'make' on current files
