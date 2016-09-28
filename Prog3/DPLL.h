@@ -20,8 +20,8 @@ vector<int> v_clVars;
 vector<int> v_UnitClause;
 
 
-bool DPLL();
-vector<int> DPLLhandle();
+bool DPLL(vector<vector<int>> v_currForm);
+bool DPLLhandle(vector<vector<int>> v_SATformula);
 int unitPropagate();
 int literalAssign();
 bool locPureLit(vector<int>::iterator it_Lit);

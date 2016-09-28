@@ -6,12 +6,12 @@
 //literals
 
 //TODO: Fill out these functions`
-int unitPropagate(vector<int>::iterator &it_Lit, numClauses){
+int unitPropagate(){
     return 0;
 }
 
 
-bool locPureLit(vector<int>::iterator & li_it){
+bool locPureLit(){
     return true;
 }
 
@@ -21,7 +21,7 @@ int literalAssign(){
     return 0;
 }
 
-bool DPLL(){
+bool DPLL(vector<vector<int> v_currForm){
 
     //Use an iterator to iterate through each clause of the container
     vector<vector<int>>::iterator it_Cl;
@@ -34,13 +34,29 @@ bool DPLL(){
 
     for(it_Cl == v_clauses.begin(); it_Cl != v_clauses.end(); it_Cl++){
 
+
+        //TODO: Is this really the best method?
         //vector to keep track of consistent literals
-        vector<int> v_consistLits;
+        vector<int> v_consistLits; vector<int>::iterator it_Consist;
 
-        for(it_Lit = it_Cl->begin(); it_Lit != it_Cl->end(); it_Lit++){
 
-            //TODO: Stuff with consistent literals here
+        while(isConsistent){
+            //For every literal in each clause, check that currLit is negated prev
+            for(it_Lit = it_Cl->begin(); it_Lit != it_Cl->end(); it_Lit++){
 
+                //TODO: Stuff with consistent literals here
+                if(!(v_consistLits.empty())){
+
+                    for(it_Consist = v_consistLits.begin(); 
+                        it_Consist = v_consistList.end(); it_Consist){
+                        
+                        if(*it_Lit == -(*it_Consist)){
+                            isConsistent = false;
+                        }
+
+                    }
+                }
+            }
         }
     
         //ALG: If a_Clauses contains an empty clause return false
@@ -68,20 +84,31 @@ bool DPLL(){
     }
     
     //For every pure literal in a_Clauses use literalSssign(l, a_Clauses)
-    while(locPureFit){
-        //TODO: Create pureLiteralAssign function
-        v_clauses = pureLiteralAssign()
+    while(locPureLit){
+        //TODO: Create LiteralAssign function
+        v_clauses = literalAssign()
     }
 
-    //l = choose-literal(a_Clauses);
-    //TODO: Create method that will randomly select one of the remaining literals
+    //Select one of the remaining literals and recurse with two versions of the 
+    //formula, one where the literal is true and the other where it is false
+        //Literal selection will be arbitrary at first, can be improved later
+
+    //Use literal assign to create the new versions of formulas
+
+    //recurse with these formulas 
+
+    //return if both are true or not
+
     //return (dpll(a_Clauses & l) & dpll(a_Clauses  & ~l));
+
     //TODO: v_Clauses so that it isn't global anywmore, to handle asynchronus
     //recursion? Interesting question for Greg
 
 }
 
-vector<int> DPLLhandle(vector<vector<int>> SATform){
+
+//MAY NOT BE NEEDED IF ASSIGNMENT DOESN'T NEED TO RETURN!
+bool DPLLhandle(vector<vector<int>> SATform){
 
     //convert SATform to a vector of clauses (vector of ints)
 
