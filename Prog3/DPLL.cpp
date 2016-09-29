@@ -1,24 +1,69 @@
 #include "DPLL.h"
 
 
-//Used to set the l clause to True and remove clasues with literals with ~l
-//Counts T literals for each clause and stores values. Fills pure vector with 
-//literals
 
-//TODO: Fill out these functions`
-int unitPropagate(){
-    return 0;
+//Returns iterator to pureLiteral if relevent, false if not 
+bool locPureLit(vector<int>::iterator & it_Lit){
+
+    
+    return false;
 }
 
+//remove clauses that contain the literal but also remove literals when a 
+//negation is found.
+vector<vector<int>> =unitPropagate(vector<vector<int>> v_currForm,int iLiteral){
 
-bool locPureLit(){
-    return true;
+    //Use an iterator to iterate through each clause of the container
+    vector<vector<int>>::iterator it_Cl;
+    //iterate through the literals of each clause and Unit Clauses
+    vector<int>::iterator it_Lit; 
+
+    //Iterate through each element in the current formula
+    for(it_Cl == v_currForm.begin(); it_Cl != v_currForm.end(); it_Cl++){
+
+        for(it_Lit = it_Cl->begin(); it_Lit != it_Cl->end(); it_Lit++){
+
+            //If the literal shows up in the clause remove the clause
+            if(*it_Lit == iLiteral){
+                //ISSUES MIGHT HAPPEN HERE 
+                v_currForm.erase(it_Cl);
+                break;
+            }
+            //if the complement of the literal shows up, remove the literal
+            else if(*it_Lit == -iLiteral){
+                v_currForm.erase(it_Lit);
+            }
+        }
+    }
+    
+    //After updating the formula, return it
+    return v_currForm; 
 }
 
 //If l occurs in clause, remove that clause
-int literalAssign(){
+vector<vector<int>> literalAssign(vector<vector<int>> v_currForm, int iLiteral){
+    
+    //Use an iterator to iterate through each clause of the container
+    vector<vector<int>>::iterator it_Cl;
+    //iterate through the literals of each clause and Unit Clauses
+    vector<int>::iterator it_Lit; 
 
-    return 0;
+    //Iterate through each element in the current formula
+    for(it_Cl == v_currForm.begin(); it_Cl != v_currForm.end(); it_Cl++){
+
+        for(it_Lit = it_Cl->begin(); it_Lit != it_Cl->end(); it_Lit++){
+
+            //If the literal shows up in the clause remove the clause
+            if(*it_Lit == iLiteral){
+                //ISSUES MIGHT HAPPEN HERE 
+                v_currForm.erase(it_Cl);
+                break;
+            }
+        }
+    }
+    
+    //After updating the formula, return it
+    return v_currForm; 
 }
 
 bool DPLL(vector<vector<int> v_currForm){
@@ -29,10 +74,8 @@ bool DPLL(vector<vector<int> v_currForm){
     vector<int>::iterator it_Lit, it_Unit; 
 
     bool isConsistent = true;
-    //int iCl, iVar, iSign; 
-    
 
-    for(it_Cl == v_clauses.begin(); it_Cl != v_clauses.end(); it_Cl++){
+    for(it_Cl == v_currForm.begin(); it_Cl != v_currForm.end(); it_Cl++){
 
 
         //TODO: Is this really the best method?
@@ -59,47 +102,52 @@ bool DPLL(vector<vector<int> v_currForm){
             }
         }
     
-        //ALG: If a_Clauses contains an empty clause return false
-        if(*it_Cl.size() == 0){
+        //ALG: If v_currForm contains an empty clause return false
+        if((*it_Cl).size() == 0){
             return false
         }
 
         //If unit clause (clause size 1 is found, push the position onto the 
         //unit clause position vector
-        if(*it_Cl.size() == 1){
+        if((*it_Cl).size() == 1){
             //index found as distance from list begin to iterator pos
-            v_UnitClause.push_back(std::distance(v_clauses,begin(), it_Cl));
+            v_UnitClause.push_back(std::distance(v_currForm.begin(), it_Cl));
         }
 
     }
 
-    //ALG: If a_Clauses  is a consistent set of literals return true
+    //ALG: If v_currForm  is a consistent set of literals return true
     if(isConsistent){
         return true;
     }    
 
-    //For every unit clause l in a_Clauses,aClauses = unitPropagate(l, a_Clauses);
+    //For every unit clause l in v_currForm,v_currForm = unitPropagate(l, v_currForm);
     for(it_Unit = v_UnitClause.begin(); it_Unit != v_UnitClause.end(); it_Unit++){
-        v_clauses = unitPropagate(v_clauses[*it_Unit]);
+        v_currForm = unitPropagate(v_currForm[*it_Unit]);
     }
     
-    //For every pure literal in a_Clauses use literalSssign(l, a_Clauses)
-    while(locPureLit){
-        //TODO: Create LiteralAssign function
-        v_clauses = literalAssign()
+    //For every pure literal in v_currForm use literalSssign(l, v_currForm)
+    while(locPureLit()){
+        v_currForm = literalAssign()
     }
 
     //Select one of the remaining literals and recurse with two versions of the 
     //formula, one where the literal is true and the other where it is false
         //Literal selection will be arbitrary at first, can be improved later
+    int literal = v_currForm[0][0];
 
-    //Use literal assign to create the new versions of formulas
 
+    //Use propagation to create the new versions of formulas
+    vector<vector<int>> v_posLitForm = unitPropagate(v_currForm, literal);
+    vector<vector<int>> v_negLitForm = unitPropagate(v_currForm, -(literal));
+
+    //return (dpll(v_currForm & l) & dpll(v_currForm  & ~l));
     //recurse with these formulas 
+    bool posDPLL = DPLL(v_posLitForm);
+    bool negDPLL = DPLL(v_negLitForm);
 
     //return if both are true or not
-
-    //return (dpll(a_Clauses & l) & dpll(a_Clauses  & ~l));
+    return posDPLL && negDPLL;
 
     //TODO: v_Clauses so that it isn't global anywmore, to handle asynchronus
     //recursion? Interesting question for Greg
@@ -114,7 +162,7 @@ bool DPLLhandle(vector<vector<int>> SATform){
 
     //if the DPLL call returns true return assignment 
     if(DPLL()){
-        return v_clauses;
+        return v_currForm;
     }
     
     //Return NULL for failure otherwise

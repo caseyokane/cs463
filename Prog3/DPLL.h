@@ -12,19 +12,18 @@ using std::string;
 
 //Notable variables:
 
-//clause container, received from command line args
-vector<vector<int>> v_clauses;
 //clause results, contain integer (-1/1) if clause is true or false
 vector<int> v_clRslts;
-vector<int> v_clVars;
+//Vector to contain the pure literal locations
+vector<int> v_PureLits;
+//Vector to contain the Unit Clauses
 vector<int> v_UnitClause;
 
 
+vector<vector<int>> literalAssign(vector<vector<int>> v_currForm, int iLiteral);
+vector<vector<int>>  unitPropagate(vector<vector<int>> v_currForm, int iLiteral);
+bool locPureLit(vector<int>::iterator it_Lit);
 bool DPLL(vector<vector<int>> v_currForm);
 bool DPLLhandle(vector<vector<int>> v_SATformula);
-int unitPropagate();
-int literalAssign();
-bool locPureLit(vector<int>::iterator it_Lit);
-int verifyDPLL();
 
 #endif
