@@ -1,14 +1,5 @@
 #include "DPLL.h"
 
-
-
-//Returns iterator to pureLiteral if relevent, false if not 
-bool locPureLit(vector<int>::iterator & it_Lit){
-
-    
-    return false;
-}
-
 //remove clauses that contain the literal but also remove literals when a 
 //negation is found.
 vector<vector<int>> =unitPropagate(vector<vector<int>> v_currForm,int iLiteral){
@@ -70,9 +61,10 @@ bool DPLL(vector<vector<int> v_currForm){
 
     //Use an iterator to iterate through each clause of the container
     vector<vector<int>>::iterator it_Cl;
-    //iterate through the literals of each clause and Unit Clauses
-    vector<int>::iterator it_Lit, it_Unit; 
+    //iterate through the literals of each clause, pure literals and Unit Clauses
+    vector<int>::iterator it_Lit, it_Pures; it_Unit; 
 
+    //set formula as consistent until negation is present
     bool isConsistent = true;
 
     for(it_Cl == v_currForm.begin(); it_Cl != v_currForm.end(); it_Cl++){
@@ -80,27 +72,44 @@ bool DPLL(vector<vector<int> v_currForm){
 
         //TODO: Is this really the best method?
         //vector to keep track of consistent literals
-        vector<int> v_consistLits; vector<int>::iterator it_Consist;
+        //vector<int> v_PureLits; vector<int>::iterator it_Consist;
 
 
-        while(isConsistent){
-            //For every literal in each clause, check that currLit is negated prev
-            for(it_Lit = it_Cl->begin(); it_Lit != it_Cl->end(); it_Lit++){
+        //For every literal in each clause, check that currLit is negated prev
+        for(it_Lit = it_Cl->begin(); it_Lit != it_Cl->end(); it_Lit++){
 
-                //TODO: Stuff with consistent literals here
-                if(!(v_consistLits.empty())){
+            //If the vector of pure literals is empty, append current literal
+            if(v_PureLits.empty()){
+                v_PureLits.push_back(*it_Lit);
+            }
 
-                    for(it_Consist = v_consistLits.begin(); 
-                        it_Consist = v_consistList.end(); it_Consist){
-                        
-                        if(*it_Lit == -(*it_Consist)){
-                            isConsistent = false;
-                        }
+            //If the pure vector isn't empty, start comparing values
+            else{
 
+                //Used to to determine if current literal is pure or not
+                bool isPure = true;
+ 
+                //For every current pure literal, check that literals don't negate 
+                for(it_Pures = v_PureLits.begin(); 
+                    it_Pures = v_PureLits.end(); it_Pures++){
+                    
+                    //If the current literal is a negated version of  pure
+                    //remove it from pure, and set isConsistent/isPure to false    
+                    if((*it_Pures == -(*it_Lit)){
+                        v_PureLits.erase(itPures);
+                        isConsistent = false;
+                        isPure = false;
                     }
+
+                }
+                //If the literal doesn't show up in v_PureLits and isn't negation
+                //of a pure literal, then append it to the pure literal list
+                if(isPure){
+                    v_PureLits.push_back(*it_Lit);
                 }
             }
         }
+
     
         //ALG: If v_currForm contains an empty clause return false
         if((*it_Cl).size() == 0){
@@ -127,8 +136,8 @@ bool DPLL(vector<vector<int> v_currForm){
     }
     
     //For every pure literal in v_currForm use literalSssign(l, v_currForm)
-    while(locPureLit()){
-        v_currForm = literalAssign()
+    for(it_Pures - v_PureLits.begin(); it_Pures = v_PureLits.end(); it_Pures++){
+        v_currForm = literalAssign(v_currForm, *it_Pures)
     }
 
     //Select one of the remaining literals and recurse with two versions of the 
