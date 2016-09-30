@@ -19,6 +19,9 @@ int main(int argc, char* argv[]){
     //Retrieve filename via character agruments 
     //Convert information to a vector<vector<ints>>
     //create a timer call DPLL
+    bool isSAT = false;
+    isSAT = DPLL(vector<vector<int> v_currForm);
+    cout << "Using DPLL is the formula satisfiable? " << isSAT << endl;
     //Output whethere complete or not
     //reset the timer, call walkSAT
     //Output assignment 

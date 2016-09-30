@@ -158,9 +158,6 @@ bool DPLL(vector<vector<int> v_currForm){
     //return if both are true or not
     return posDPLL && negDPLL;
 
-    //TODO: v_Clauses so that it isn't global anywmore, to handle asynchronus
-    //recursion? Interesting question for Greg
-
 }
 
 
