@@ -7,10 +7,24 @@
 
 
 #include <iostream>
+#include <ifstream>
+#include <string>
 
+
+using std::ifstream;
+using std::string;
 
 int main(int argc, char* argv[]){
 
-    std::cout << "Hello World" << std::endl;
+    //Retrieve filename via character agruments 
+    //Convert information to a vector<vector<ints>>
+    //create a timer call DPLL
+    //Output whethere complete or not
+    //reset the timer, call walkSAT
+    //Output assignment 
+    //reset the timer, call hillClimb
+    //Output assignment
+
+
     return 0;
 }
