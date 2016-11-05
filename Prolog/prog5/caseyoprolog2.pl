@@ -4,9 +4,10 @@
 %%%Helper Rules used by primary predicates 
 
 
-%Simple predicate to count the elements in a list 
+%Simple predicate to count the elements in a list and calculate score 
+%Result of Intuition of users sumx and Boris of stack overflow (detailed in documentation)
 %Base Case
-countElements([],X,0).
+countElements([],_,0).
 %Check that Y iz the succeding element compared to Z
 countElements([X|Tail],X,Y):- 
 	countElements(Tail,X,Z), 
@@ -153,7 +154,6 @@ moveAdj(X1,Y1,Maze,Visited,VisitedItems,VisitedOccur,Width,Height,Path) :-
 	%\+ member([Xnew,Ynew],Visited),
 	validMove(Xnew,Ynew,Maze,CurrPos),
 	Result = [[X1,Y1]|Visited],
-	%ResultItems = [[CurrPos,X1,Y1]|VisitedItems],
 	(\+member([CurrPos,X1,Y1], VisitedItems) -> 
 		ResultItems = [[CurrPos,X1,Y1]|VisitedItems], ResultOccur = [CurrPos|VisitedOccur]; 
 		ResultItems = VisitedItems, ResultOccur = VisitedOccur),
