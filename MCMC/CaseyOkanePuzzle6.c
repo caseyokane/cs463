@@ -11,10 +11,10 @@ int main()
 {
 
  	//Initialize variables to keep track of current variable evaluation
- 	int nodeA = 0;
- 	int nodeD = 0;
- 	int nodeE = 0;
- 	int nodeF = 0;
+ 	int nodeA = 1;
+ 	int nodeD = 1;
+ 	int nodeE = 1;
+ 	int nodeF = 1;
 	
  	//Initialize probabilities found with markov blanket calculations
  	//Where node probability is found where node value is true
@@ -51,23 +51,26 @@ int main()
  	for(int runNum = 0; runNum < 5; runNum++){
 
  		//Initialize array to store ratios for graphing
- 		double dRatioVals [9] = {};
+ 		double dRatioVals [10] = {};
 
 		//Initialize counter to keep track of instances where A = true 
 		int nodeAcntr = 0;
 
 		//Create random initial values for ADEF
 
- 		//Complete 10000 instances 
+ 		//Complete 10000 instances
 		for(int i = 1; i <= 10000; i++){
 
-	 		//Iterate through each of the nonevidence nodes  
-	 		for(int j = 0; j < 3; j++){
+	 		//Find the biased flip value using RNG
+	 		double biasFlip = ((double) rand() / (RAND_MAX));
+            printf(" flipVal=%f ", biasFlip);
+	 		
+            //Iterate through each of the nonevidence nodes  
+	 		for(int j = 0; j < 4; j++){
 
 	 			//Update the j node according to a biased flip
 
-	 			//Find the biased flip value using RNG
-	 			double biasFlip = ((double) rand() / (RAND_MAX));
+
 
 	 			//The j node is treated as one of the nonevidence values 
 	 			//0 = nodeD, 1 = nodeE, 2 = nodeF, nodeA otherwise
@@ -215,23 +218,27 @@ int main()
 	 			
 	 		}
 
+
+
 	 		//Enter branch if 40 iterations have occurred
 	 		if(i % 1000 == 0){
 	 			//Find where to store value in the array
 	 			int RatioValsPos = (i / 1000) - 1;
+	 			//int RatioValsPos = i;
 	 			//Calculate actual ratio 
 	 			double currRatio = (double) nodeAcntr / i; 
 	 			//store resulting ratio in array for graphing 
 	 			dRatioVals[RatioValsPos] = currRatio;
+                //printf("currPos:%d nodeAcntr:%d currRatio:%f\n", RatioValsPos, nodeAcntr, currRatio);
 
 	 		}
 
 	 	}
 
 	 	//Display actual results for that iteration
- 		printf("Run #%d: Ratio Values (per 1000 iterations) shown below\n", runNum);
+ 		//printf("Run #%d: Ratio Values (per 1000 iterations) shown below\n", runNum+1);
 	 	for(int arrCntr = 0; arrCntr < 10; arrCntr++){
-	 		printf("x = %d, y = %f\n", (arrCntr*1000), dRatioVals[arrCntr]);
+	 		printf("x = %d, y = %f\n", ((arrCntr+1)*1000), dRatioVals[arrCntr]);
 	 	}
 	 	printf("\n");
 
