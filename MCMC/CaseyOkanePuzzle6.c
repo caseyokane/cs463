@@ -23,14 +23,14 @@ int main()
  	double probAwCtrDfa = 1;
 
  	//Node D
- 	double probDwCtrAtrFtrEtr = 0.6;
- 	double probDwCtrAfaFtrEtr = 1;
- 	double probDwCtrAtrFfaEtr = 0.9333333333;
- 	double probDwCtrAfaFfaEtr = 1;
- 	double probDwCtrAtrFtrEfa = 0.9411764706;
- 	double probDwCtrAfaFtrEfa = 1;
- 	double probDwCtrAtrFfaEfa = 0.7272727273;
- 	double probDwCtrAfaFfaEfa = 1;
+ 	double probDwAtrFtrEtr = 0.6;
+ 	double probDwAfaFtrEtr = 1;
+ 	double probDwAtrFfaEtr = 0.9333333333;
+ 	double probDwAfaFfaEtr = 1;
+ 	double probDwAtrFtrEfa = 0.9411764706;
+ 	double probDwAfaFtrEfa = 1;
+ 	double probDwAtrFfaEfa = 0.7272727273;
+ 	double probDwAfaFfaEfa = 1;
 
  	//Node E
  	double probEwBfaDtrFtr = 0.5294117647;
@@ -63,7 +63,7 @@ int main()
 
 	 		//Find the biased flip value using RNG
 	 		double biasFlip = ((double) rand() / (RAND_MAX));
-            printf(" flipVal=%f ", biasFlip);
+            //printf(" flipVal=%f ", biasFlip);
 	 		
             //Iterate through each of the nonevidence nodes  
 	 		for(int j = 0; j < 4; j++){
@@ -79,49 +79,49 @@ int main()
 
 	 				//work with node D
 	 				case 0:
-	 					//Account for all permuations of A, F, E, and C = c
+	 					//Account for all permuations of A, F, E
 
 	 					//First, check for the particular configuration of node values
 	 					if(nodeA && nodeF && nodeE){
 	 						//DOCUMENTATION
 	 						//If the flip value is greater than the 
 	 						//probability, then we say that node is true for that configuration 
-	 						if(biasFlip < probDwCtrAtrFtrEtr){
+	 						if(biasFlip < probDwAtrFtrEtr){
 	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(!nodeA && nodeF && nodeE){
-	 						if(biasFlip < probDwCtrAfaFtrEtr){
+	 						if(biasFlip < probDwAfaFtrEtr){
 	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(nodeA && !nodeF && nodeE){
-	 						if(biasFlip < probDwCtrAtrFfaEtr){
+	 						if(biasFlip < probDwAtrFfaEtr){
 	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(!nodeA && !nodeF && nodeE){
-	 						if(biasFlip < probDwCtrAfaFfaEtr){
+	 						if(biasFlip < probDwAfaFfaEtr){
 	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(nodeA && nodeF && !nodeE){
-	 						if(biasFlip < probDwCtrAtrFtrEfa){
+	 						if(biasFlip < probDwAtrFtrEfa){
 	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(!nodeA && nodeF && !nodeE){
-	 						if(biasFlip < probDwCtrAfaFtrEfa){
+	 						if(biasFlip < probDwAfaFtrEfa){
 	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(nodeA && !nodeF && !nodeE){
-	 						if(biasFlip < probDwCtrAtrFfaEfa){
+	 						if(biasFlip < probDwAtrFfaEfa){
 	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(!nodeA && !nodeF && !nodeE){
-	 						if(biasFlip < probDwCtrAfaFfaEfa){
+	 						if(biasFlip < probDwAfaFfaEfa){
 	 							nodeD = 1;
 	 						}
 	 					}
@@ -217,8 +217,6 @@ int main()
 
 	 			
 	 		}
-
-
 
 	 		//Enter branch if 40 iterations have occurred
 	 		if(i % 1000 == 0){

@@ -2,7 +2,7 @@
 
 //remove clauses that contain the literal but also remove literals when a 
 //negation is found.
-vector<vector<int>> =unitPropagate(vector<vector<int>> v_currForm,int iLiteral){
+vector<vector<int>> unitPropagate(vector<vector<int>> v_currForm,int iLiteral){
 
     //Use an iterator to iterate through each clause of the container
     vector<vector<int>>::iterator it_Cl;
@@ -67,15 +67,9 @@ bool DPLL(vector<vector<int> v_currForm){
     //set formula as consistent until negation is present
     bool isConsistent = true;
 
+    //For every literal in each clause, check that currLit is negated prev
     for(it_Cl == v_currForm.begin(); it_Cl != v_currForm.end(); it_Cl++){
 
-
-        //TODO: Is this really the best method?
-        //vector to keep track of consistent literals
-        //vector<int> v_PureLits; vector<int>::iterator it_Consist;
-
-
-        //For every literal in each clause, check that currLit is negated prev
         for(it_Lit = it_Cl->begin(); it_Lit != it_Cl->end(); it_Lit++){
 
             //If the vector of pure literals is empty, append current literal
@@ -132,11 +126,11 @@ bool DPLL(vector<vector<int> v_currForm){
 
     //For every unit clause l in v_currForm,v_currForm = unitPropagate(l, v_currForm);
     for(it_Unit = v_UnitClause.begin(); it_Unit != v_UnitClause.end(); it_Unit++){
-        v_currForm = unitPropagate(v_currForm[*it_Unit]);
+        v_currForm = unitPropagate(v_currForm, *it_Unit);
     }
     
     //For every pure literal in v_currForm use literalSssign(l, v_currForm)
-    for(it_Pures - v_PureLits.begin(); it_Pures = v_PureLits.end(); it_Pures++){
+    for(it_Pures = v_PureLits.begin(); it_Pures != v_PureLits.end(); it_Pures++){
         v_currForm = literalAssign(v_currForm, *it_Pures)
     }
 
@@ -158,19 +152,4 @@ bool DPLL(vector<vector<int> v_currForm){
     //return if both are true or not
     return posDPLL && negDPLL;
 
-}
-
-
-//MAY NOT BE NEEDED IF ASSIGNMENT DOESN'T NEED TO RETURN!
-bool DPLLhandle(vector<vector<int>> SATform){
-
-    //convert SATform to a vector of clauses (vector of ints)
-
-    //if the DPLL call returns true return assignment 
-    if(DPLL()){
-        return v_currForm;
-    }
-    
-    //Return NULL for failure otherwise
-    return NULL; 
 }

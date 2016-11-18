@@ -4,7 +4,7 @@ CFLAGS = -Wall -g
 INCLUDES = -I.
 LIBS = -lpthread
 SRCS = main.cpp DPLL.cpp walkSAT.cpp hillClimb.cpp  
-OBJS = main.o DPLL.cpp walkSAT.cpp hillClimb.cpp
+OBJS = main.o DPLL.o walkSAT.o hillClimb.o
 
 SATassign = SATassignment
 LDFLAGS = -ldl

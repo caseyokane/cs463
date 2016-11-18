@@ -19,7 +19,8 @@ assignment for boolean formulas in CNF. Options include:
     * DPLL
     * walkSAT
     * hillClimbing 
+* DocumentationPDF
+*SAT Instances Directory, that consists of all CNF files
 
 ###Executing Code:
 1. Cast 'make' on current files
-2. Follow format specified in SAT formatting rules

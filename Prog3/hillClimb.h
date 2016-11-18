@@ -4,11 +4,15 @@
 //Basic node structure used throughout hill climbing
 struct hillNode{
     int fitVal;
+    vector<int> v_varAssign;
     vector<vector<int>> v_currFormState;
-    vector<hillNode*> v_neighbors;
+    hillNode v_fittestNeighbor;
 };
 
-int hillClimb(vector<vector<int>> v_currForm);
+int randRestartCtr = 0;
+
+hillNode findNeighbors(hillNode currNode);
+vector<int> hillClimb(vector<vector<int>> v_currForm, int limit);
 
 
 #endif
