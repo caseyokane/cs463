@@ -58,8 +58,8 @@ int main()
 
 		//Create random initial values for ADEF
 
- 		//Complete 400 instances 
-		for(int i = 1; i <= 400; i++){
+ 		//Complete 10000 instances 
+		for(int i = 1; i <= 10000; i++){
 
 	 		//Iterate through each of the nonevidence nodes  
 	 		for(int j = 0; j < 3; j++){
@@ -79,7 +79,7 @@ int main()
 	 					//Account for all permuations of A, F, E, and C = c
 
 	 					//First, check for the particular configuration of node values
-	 					if(nodeA && nodeF && NodeE){
+	 					if(nodeA && nodeF && nodeE){
 	 						//DOCUMENTATION
 	 						//If the flip value is greater than the 
 	 						//probability, then we say that node is true for that configuration 
@@ -87,37 +87,37 @@ int main()
 	 							nodeD = 1;
 	 						}
 	 					}
-	 					else if(!nodeA && nodeF && NodeE){
+	 					else if(!nodeA && nodeF && nodeE){
 	 						if(biasFlip < probDwCtrAfaFtrEtr){
 	 							nodeD = 1;
 	 						}
 	 					}
-	 					else if(nodeA && !nodeF && NodeE){
+	 					else if(nodeA && !nodeF && nodeE){
 	 						if(biasFlip < probDwCtrAtrFfaEtr){
 	 							nodeD = 1;
 	 						}
 	 					}
-	 					else if(!nodeA && !nodeF && NodeE){
+	 					else if(!nodeA && !nodeF && nodeE){
 	 						if(biasFlip < probDwCtrAfaFfaEtr){
 	 							nodeD = 1;
 	 						}
 	 					}
-	 					else if(nodeA && nodeF && !NodeE){
+	 					else if(nodeA && nodeF && !nodeE){
 	 						if(biasFlip < probDwCtrAtrFtrEfa){
 	 							nodeD = 1;
 	 						}
 	 					}
-	 					else if(!nodeA && nodeF && !NodeE){
+	 					else if(!nodeA && nodeF && !nodeE){
 	 						if(biasFlip < probDwCtrAfaFtrEfa){
 	 							nodeD = 1;
 	 						}
 	 					}
-	 					else if(nodeA && !nodeF && !NodeE){
+	 					else if(nodeA && !nodeF && !nodeE){
 	 						if(biasFlip < probDwCtrAtrFfaEfa){
 	 							nodeD = 1;
 	 						}
 	 					}
-	 					else if(!nodeA && !nodeF && !NodeE){
+	 					else if(!nodeA && !nodeF && !nodeE){
 	 						if(biasFlip < probDwCtrAfaFfaEfa){
 	 							nodeD = 1;
 	 						}
@@ -163,22 +163,22 @@ int main()
 	 				case 2:
 	 					//Account for all permutations of D and E
 	 					if(nodeD && nodeE){
-	 						if(biasFlip < probFwBfaDtrEtr){
+	 						if(biasFlip < probFwDtrEtr){
 	 							nodeE = 1; 
 	 						}
 	 					}
 	 					else if(nodeD && !nodeE){
-	 						if(biasFlip < probFwBfaDtrEfa){
+	 						if(biasFlip < probFwDtrEfa){
 	 							nodeE = 1;
 	 						}
 	 					}
 	 					else if(!nodeD && nodeE){
-	 						if(biasFlip < probFwBfaDtrEfa){
+	 						if(biasFlip < probFwDfaEtr){
 	 							nodeE = 1; 
 	 						}
 	 					}
 	 					else if(!nodeD && !nodeE){
-	 						if(biasFlip < probFwBfaDfaEfa){
+	 						if(biasFlip < probFwDfaEfa){
 	 							nodeE = 1; 
 	 						}
 	 					}
@@ -216,9 +216,9 @@ int main()
 	 		}
 
 	 		//Enter branch if 40 iterations have occurred
-	 		if(i % 40 == 0){
+	 		if(i % 1000 == 0){
 	 			//Find where to store value in the array
-	 			int RatioValsPos = (i / 40) - 1;
+	 			int RatioValsPos = (i / 1000) - 1;
 	 			//Calculate actual ratio 
 	 			double currRatio = (double) nodeAcntr / i; 
 	 			//store resulting ratio in array for graphing 
@@ -229,9 +229,9 @@ int main()
 	 	}
 
 	 	//Display actual results for that iteration
- 		printf("Run #%d: Ratio Values (per 40 iterations) shown below\n", runNum);
+ 		printf("Run #%d: Ratio Values (per 1000 iterations) shown below\n", runNum);
 	 	for(int arrCntr = 0; arrCntr < 10; arrCntr++){
-	 		printf("x = %d, y = %f\n", (arrCntr*40), dRatioVals[arrCntr]);
+	 		printf("x = %d, y = %f\n", (arrCntr*1000), dRatioVals[arrCntr]);
 	 	}
 	 	printf("\n");
 
