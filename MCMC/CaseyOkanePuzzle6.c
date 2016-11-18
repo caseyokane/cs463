@@ -7,7 +7,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-int main(int argc, char[] argv)
+int main()
 {
 
  	//Initialize variables to keep track of current variable evaluation
