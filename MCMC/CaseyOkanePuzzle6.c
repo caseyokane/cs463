@@ -1,10 +1,7 @@
 /*
-
 	CS463 Puzzle 6: MCMC and Bayes Net 
 	Casey O'Kane
-
 */
-
 
 #include <stdio.h>
 #include <time.h>
@@ -14,34 +11,32 @@ int main(int argc, char[] argv)
 {
 
  	//Initialize variables to keep track of current variable evaluation
- 	// const bool nodeB = false;
- 	// const bool nodeC = true;
- 	bool nodeA = false;
- 	bool nodeD = false;
- 	bool nodeE = false;
- 	bool nodeF = false;
+ 	int nodeA = 0;
+ 	int nodeD = 0;
+ 	int nodeE = 0;
+ 	int nodeF = 0;
 	
  	//Initialize probabilities found with markov blanket calculations
  	//Where node probability is found where node value is true
  	//Node A
- 	double probAwCtrDtr = 0.528;
+ 	double probAwCtrDtr = 0.5283018868;
  	double probAwCtrDfa = 1;
 
  	//Node D
- 	double probDwCtrAtrFtrEtr = 0;
- 	double probDwCtrAfaFtrEtr = 0;
- 	double probDwCtrAtrFfaEtr = 0;
- 	double probDwCtrAfaFfaEtr = 0;
- 	double probDwCtrAtrFtrEfa = 0;
- 	double probDwCtrAfaFtrEfa = 0;
- 	double probDwCtrAtrFfaEfa = 0;
- 	double probDwCtrAfaFfaEfa = 0;
+ 	double probDwCtrAtrFtrEtr = 0.6;
+ 	double probDwCtrAfaFtrEtr = 1;
+ 	double probDwCtrAtrFfaEtr = 0.9333333333;
+ 	double probDwCtrAfaFfaEtr = 1;
+ 	double probDwCtrAtrFtrEfa = 0.9411764706;
+ 	double probDwCtrAfaFtrEfa = 1;
+ 	double probDwCtrAtrFfaEfa = 0.7272727273;
+ 	double probDwCtrAfaFfaEfa = 1;
 
  	//Node E
- 	double probEwBfaDtrFtr = 0;
- 	double probEwBfaDtrFfa = 0;
- 	double probEwBfaDfaFtr = 0;
- 	double probEwBfaDfaFfa = 0;
+ 	double probEwBfaDtrFtr = 0.5294117647;
+ 	double probEwBfaDtrFfa = 0.6363636364;
+ 	double probEwBfaDfaFtr = 0.9230769231;
+ 	double probEwBfaDfaFfa = 0.25;
 
  	//Node F - Given in bayesnet.pdf
  	double probFwDtrEtr = 0.3;
@@ -60,6 +55,8 @@ int main(int argc, char[] argv)
 
 		//Initialize counter to keep track of instances where A = true 
 		int nodeAcntr = 0;
+
+		//Create random initial values for ADEF
 
  		//Complete 400 instances 
 		for(int i = 1; i <= 400; i++){
@@ -86,49 +83,49 @@ int main(int argc, char[] argv)
 	 						//DOCUMENTATION
 	 						//If the flip value is greater than the 
 	 						//probability, then we say that node is true for that configuration 
-	 						if(biasFlip > probDwCtrAtrFtrEtr){
-	 							nodeD = true;
+	 						if(biasFlip < probDwCtrAtrFtrEtr){
+	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(!nodeA && nodeF && NodeE){
-	 						if(biasFlip > probDwCtrAfaFtrEtr){
-	 							nodeD = true;
+	 						if(biasFlip < probDwCtrAfaFtrEtr){
+	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(nodeA && !nodeF && NodeE){
-	 						if(biasFlip > probDwCtrAtrFfaEtr){
-	 							nodeD = true;
+	 						if(biasFlip < probDwCtrAtrFfaEtr){
+	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(!nodeA && !nodeF && NodeE){
-	 						if(biasFlip > probDwCtrAfaFfaEtr){
-	 							nodeD = true;
+	 						if(biasFlip < probDwCtrAfaFfaEtr){
+	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(nodeA && nodeF && !NodeE){
-	 						if(biasFlip > probDwCtrAtrFtrEfa){
-	 							nodeD = true;
+	 						if(biasFlip < probDwCtrAtrFtrEfa){
+	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(!nodeA && nodeF && !NodeE){
-	 						if(biasFlip > probDwCtrAfaFtrEfa){
-	 							nodeD = true;
+	 						if(biasFlip < probDwCtrAfaFtrEfa){
+	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(nodeA && !nodeF && !NodeE){
-	 						if(biasFlip > probDwCtrAtrFfaEfa){
-	 							nodeD = true;
+	 						if(biasFlip < probDwCtrAtrFfaEfa){
+	 							nodeD = 1;
 	 						}
 	 					}
 	 					else if(!nodeA && !nodeF && !NodeE){
-	 						if(biasFlip > probDwCtrAfaFfaEfa){
-	 							nodeD = true;
+	 						if(biasFlip < probDwCtrAfaFfaEfa){
+	 							nodeD = 1;
 	 						}
 	 					}
 	 					//If the probability doesn't match for the given 
 	 					//configuration, then that node is false
 	 					else{
-	 						nodeD = false;
+	 						nodeD = 0;
 	 					}		 							 							 					
 	 					break;
 
@@ -136,28 +133,28 @@ int main(int argc, char[] argv)
 	 				case 1:
 	 					//Account for all permutations of D, F, and B = !b
 	 					if(nodeD && nodeF){
-	 						if(biasFlip > probEwBfaDtrFtr){
-	 							nodeE = true; 
+	 						if(biasFlip < probEwBfaDtrFtr){
+	 							nodeE = 1; 
 	 						}
 	 					}
 	 					else if(nodeD && !nodeF){
-	 						if(biasFlip > probEwBfaDtrFfa){
-	 							nodeE = true;
+	 						if(biasFlip < probEwBfaDtrFfa){
+	 							nodeE = 1;
 	 						}
 	 					}
 	 					else if(!nodeD && nodeF){
-	 						if(biasFlip > probEwBfaDtrFfa){
-	 							nodeE = true; 
+	 						if(biasFlip < probEwBfaDtrFfa){
+	 							nodeE = 1; 
 	 						}
 	 					}
 	 					else if(!nodeD && !nodeF){
-	 						if(biasFlip > probEwBfaDfaFfa){
-	 							nodeE = true; 
+	 						if(biasFlip < probEwBfaDfaFfa){
+	 							nodeE = 1; 
 	 						}
 	 					}
 	 					//If the permutation isn't relevant, E = False
 	 					else{
-	 						nodeE = false;
+	 						nodeE = 0;
 	 					}
 
 	 					break;
@@ -167,27 +164,27 @@ int main(int argc, char[] argv)
 	 					//Account for all permutations of D and E
 	 					if(nodeD && nodeE){
 	 						if(biasFlip < probFwBfaDtrEtr){
-	 							nodeE = true; 
+	 							nodeE = 1; 
 	 						}
 	 					}
 	 					else if(nodeD && !nodeE){
 	 						if(biasFlip < probFwBfaDtrEfa){
-	 							nodeE = true;
+	 							nodeE = 1;
 	 						}
 	 					}
 	 					else if(!nodeD && nodeE){
 	 						if(biasFlip < probFwBfaDtrEfa){
-	 							nodeE = true; 
+	 							nodeE = 1; 
 	 						}
 	 					}
 	 					else if(!nodeD && !nodeE){
 	 						if(biasFlip < probFwBfaDfaEfa){
-	 							nodeE = true; 
+	 							nodeE = 1; 
 	 						}
 	 					}
 	 					//If the permutation isn't relevant, E = False
 	 					else{
-	 						nodeE = false;
+	 						nodeE = 0;
 	 					}
 
 	 					break;
@@ -198,20 +195,20 @@ int main(int argc, char[] argv)
 	 					//Account for all permutations of D with C = c
 	 					if(nodeD){
 	 						if(biasFlip < probAwCtrDtr){
-	 							nodeA = true;
+	 							nodeA = 1;
 	 							//DOC: Incremement the number of times A is true 
 	 							nodeAcntr++;
 	 						}
 	 					}
 	 					else if(!nodeD){
 	 						if(biasFlip < probAwCtrDfa){
-	 							nodeA = true;
+	 							nodeA = 1;
 	 							nodeAcntr++;
 	 						}
 	 					}
 
 	 					else{
-	 						nodeA = false;
+	 						nodeA = 0;
 	 					}
 	 			}
 
