@@ -57,19 +57,23 @@ int main()
 		int nodeAcntr = 0;
 
 		//Create random initial values for ADEF
+        nodeA = rand() % 2;
+        nodeD = rand() % 2;
+        nodeE = rand() % 2;
+        nodeF = rand() % 2;
+        printf("Initial Node Values for Run#%d\n", runNum+1);
+        printf("A=%d, B=0, C=1, D=%d, E=%d, F=%d\n\n", nodeA,nodeD,nodeE,nodeF);
 
  		//Complete 10000 instances
 		for(int i = 1; i <= 10000; i++){
 
-	 		//Find the biased flip value using RNG
-	 		double biasFlip = ((double) rand() / (RAND_MAX));
-            //printf(" flipVal=%f ", biasFlip);
-	 		
             //Iterate through each of the nonevidence nodes  
 	 		for(int j = 0; j < 4; j++){
 
 	 			//Update the j node according to a biased flip
 
+	 		    //Find the biased flip value using RNG
+	 		    double biasFlip = ((double) rand() / (RAND_MAX));
 
 
 	 			//The j node is treated as one of the nonevidence values 
@@ -234,7 +238,7 @@ int main()
 	 	}
 
 	 	//Display actual results for that iteration
- 		//printf("Run #%d: Ratio Values (per 1000 iterations) shown below\n", runNum+1);
+ 		printf("Run #%d: Ratio Values (per 1000 iterations) shown below\n", runNum+1);
 	 	for(int arrCntr = 0; arrCntr < 10; arrCntr++){
 	 		printf("x = %d, y = %f\n", ((arrCntr+1)*1000), dRatioVals[arrCntr]);
 	 	}
