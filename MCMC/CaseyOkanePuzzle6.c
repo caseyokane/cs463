@@ -72,14 +72,12 @@ int main()
 
 	 			//Update the j node according to a biased flip
 
-	 		    //Find the biased flip value using RNG
+	 		    //Find the biased flip value (between 1 and 0) using RNG
 	 		    double biasFlip = ((double) rand() / (RAND_MAX));
-
 
 	 			//The j node is treated as one of the nonevidence values 
 	 			//0 = nodeD, 1 = nodeE, 2 = nodeF, nodeA otherwise
 	 			switch(j){
-
 
 	 				//work with node D
 	 				case 0:
@@ -87,8 +85,7 @@ int main()
 
 	 					//First, check for the particular configuration of node values
 	 					if(nodeA && nodeF && nodeE){
-	 						//DOCUMENTATION
-	 						//If the flip value is greater than the 
+	 						//If the flip value is less than the 
 	 						//probability, then we say that node is true for that configuration 
 	 						if(biasFlip < probDwAtrFtrEtr){
 	 							nodeD = 1;
@@ -203,7 +200,7 @@ int main()
 	 					if(nodeD){
 	 						if(biasFlip < probAwCtrDtr){
 	 							nodeA = 1;
-	 							//DOC: Incremement the number of times A is true 
+	 							//Incremement the number of times A is true 
 	 							nodeAcntr++;
 	 						}
 	 					}
@@ -213,7 +210,6 @@ int main()
 	 							nodeAcntr++;
 	 						}
 	 					}
-
 	 					else{
 	 						nodeA = 0;
 	 					}
@@ -222,11 +218,10 @@ int main()
 	 			
 	 		}
 
-	 		//Enter branch if 40 iterations have occurred
+	 		//Enter branch if 1000 iterations have occurred
 	 		if(i % 1000 == 0){
 	 			//Find where to store value in the array
 	 			int RatioValsPos = (i / 1000) - 1;
-	 			//int RatioValsPos = i;
 	 			//Calculate actual ratio 
 	 			double currRatio = (double) nodeAcntr / i; 
 	 			//store resulting ratio in array for graphing 
