@@ -9,11 +9,11 @@
 
 
 //Simple helper function to display both grids when desired
-void displayGrids(char arrowGrid, double valueGrid);
+void displayGrids(char arrowGrid[], double valueGrid[]);
 //Helper function to intialize probabilities to the action table 
 void initActionProbs();
 //Function used to determine the action that maximizes movement
-double findMaxActionVal(int currState);
+double findMaxActionVal(int currState, double valueGrid[]);
 
 
 //Simple integer to determine arrow movement. 
@@ -75,14 +75,13 @@ int main()
 
 		printf("Finite Horizon %d\n", horizCtr);
 		//Initialize the values that are being edited by setting them to the initial grid
-		initValueGrid
 		memcpy(v_Vvals, initValueGrid, sizeof(v_Vvals));
 		//Do same for arrow grid
 		memcpy(v_currArrows, initArrowGrid, sizeof(v_currArrows));
 
 		//Iterate through each possible state s0-s35
 		for(stateCtr = 0; stateCtr < 36; stateCtr++){
-			maxActionVal = findMaxActionVal(stateCtr);
+			maxActionVal = findMaxActionVal(stateCtr, v_Vvals);
 			v_Vvals[stateCtr] = stateRewards[stateCtr] + maxActionVal;
 
 			//Update arrow grid
@@ -113,7 +112,7 @@ int main()
 
 
 	//Display grids 
-	printf('\n')
+	printf('\n');
 
 	//Loop
 	//U = Uprime; double sigma = 0;
@@ -142,7 +141,7 @@ int main()
 	return 0;
 }
 
-void displayGrids(char arrowGrid, double valueGrid){
+void displayGrids(char arrowGrid[], double valueGrid[]){
 
 	//Simple counter variable
 	int i;
@@ -150,7 +149,7 @@ void displayGrids(char arrowGrid, double valueGrid){
 	//First display the values
 	for(i = 0; i<36; i++){
 
-		printf(" %d ", valueGrid[i];
+		printf(" %d ", valueGrid[i]);
 
 		if((i+1)%6 == 0){
 			//Finish each row with a newline 
@@ -161,7 +160,7 @@ void displayGrids(char arrowGrid, double valueGrid){
 	//Then the arrows
 	for(i = 0; i<36; i++){
 
-		printf(" %d ", arrowGrid[i];
+		printf(" %d ", arrowGrid[i]);
 
 		if((i+1)%6 == 0){
 			//Finish each row with a newline 
@@ -170,7 +169,7 @@ void displayGrids(char arrowGrid, double valueGrid){
 	}
 }
 
-double findMaxActionVal(int currState){
+double findMaxActionVal(int currState, valueGrid[]){
 
 	//Array of ints to store values for every action
 	int actionVals[4] = {0};
