@@ -126,24 +126,22 @@ int main()
 	//Initialize gamma value as defined in the prompt
 	double gamma = 0.95;
 	//Initialize value for sigma which keeps value-iteration operating 
-	double sigma = 1;
+	double sigma = 0;
 	//Initialize variable to represent maximum error for iteration
 	double maxErr = 0.000001;
 	//Double used to contain the temporary Vval value to calculate sigma.
 	double tempVval = 0;
 
+	//Initialize the values that are being edited by setting them to the initial grid
+	//Do same for arrow grid
+    for(stateCtr = 0; stateCtr < 36; stateCtr++){
+        v_Vvals[stateCtr] = initValueGrid[stateCtr];
+        v_currArrows[stateCtr] = initArrowGrid[stateCtr];
+     }
+
 	//Now find value iteration results for infinite horizon case
-/*
 	while (sigma < (maxErr*(1 - gamma))/gamma ){
 
-		//Initialize the values that are being edited by setting them to the initial grid
-		//Do same for arrow grid
-        for(stateCtr = 0; stateCtr < 36; stateCtr++){
-            v_Vvals[stateCtr] = initValueGrid[stateCtr];
-            v_currArrows[stateCtr] = initArrowGrid[stateCtr];
-
-
-        }
 
 		//Iterate through each possible state s0-s35
 		for(stateCtr = 0; stateCtr < 36; stateCtr++){
@@ -171,7 +169,7 @@ int main()
 
 
             //Check that different between old values and new is not greater than sigma
-            double currErr = abs(v_Vvals[stateCtr] - tempVval)
+            double currErr = abs(v_Vvals[stateCtr] - tempVval);
             if(currErr > sigma){
             	//Update the sigma value to the absolute difference
             	sigma = currErr;
@@ -179,12 +177,10 @@ int main()
 		}
 
 	}
-*/
 
 	//Display grids 
-	//printf('\n');
-
-
+	displayGrids(v_currArrows, v_Vvals);
+	printf("\n");
 	return 0;
 }
 
@@ -229,6 +225,7 @@ double findMaxActionVal(int currState, double valueGrid[]){
 	for(nxtStCtr = 0; nxtStCtr < 36; nxtStCtr++){
 		//Iterate through up probabilities
 		//Determine if it is possible to move up
+        //TODO: Fix this, it's only keeping for values with a score
 		if(upProbs[currState][nxtStCtr] != 0){
 			//find value using up action probabilities
 			actionVals[0] += (upProbs[currState][nxtStCtr] * valueGrid[currState]);
@@ -259,7 +256,7 @@ double findMaxActionVal(int currState, double valueGrid[]){
 	//Initialize up action as maximum 
 	double maxActionProb = actionVals[0]; usedState = 0;
 	//Iterate through the collected probabilties
-	for(actionValsCtr = 1; actionValsCtr <4; actionValsCtr++){
+	for(actionValsCtr = 1; actionValsCtr < 4; actionValsCtr++){
 		
 		//If the new value is the new maximum then enter this branch
 		if(actionVals[actionValsCtr] > maxActionProb){
