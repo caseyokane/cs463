@@ -4,7 +4,6 @@
 */
 
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
 
 
@@ -68,17 +67,25 @@ int main()
 	//Initialize vectors to store results from value iteration
 	double v_Vvals[36] = {0}; char v_currArrows[36];
 
+	//PSUEDOCODE FROM TEXT/LECTURE
+	//Loop
+	//U = Uprime; double sigma = 0;
+		//for every state
+			//Uprime[s] = r(s) + discount * maxSum
+			//if abs(Uprime[s] - U[s]) > sigma
+				//sigma = abs(Uprime[s] - U[s])
 
-	printf("Outputting Finite Horizon Results\n");
+
+	//Initialize the values that are being edited by setting them to the initial grid
+	//Do same for arrow grid
+    for(stateCtr = 0; stateCtr < 36; stateCtr++){
+        v_Vvals[stateCtr] = initValueGrid[stateCtr];
+        v_currArrows[stateCtr] = initArrowGrid[stateCtr];
+    }
+
+	printf("Outputting Finite Horizon 7 Solution\n");
 	//Now find value iteration results for 7 horizon
 	for (horizCtr = 0; horizCtr < 8; horizCtr++){
-
-		//Initialize the values that are being edited by setting them to the initial grid
-		//Do same for arrow grid
-        for(stateCtr = 0; stateCtr < 36; stateCtr++){
-            v_Vvals[stateCtr] = initValueGrid[stateCtr];
-            v_currArrows[stateCtr] = initArrowGrid[stateCtr];
-        }
 
 		//Iterate through each possible state s0-s35
 		for(stateCtr = 0; stateCtr < 36; stateCtr++){
@@ -107,24 +114,75 @@ int main()
 	}
 
 	//Display grid 
-	printf("Finite Horizon 7 Solution\n");
 	displayGrids(v_currArrows, v_Vvals);
 	printf("\n");
 	
 
+
+
     //Find results for infinite horizon using same methods as 7 horizon but with
     //sigma.
+	printf("Outputting Infinite Horizon Results\n");
+	//Initialize gamma value as defined in the prompt
+	double gamma = 0.95;
+	//Initialize value for sigma which keeps value-iteration operating 
+	double sigma = 1;
+	//Initialize variable to represent maximum error for iteration
+	double maxErr = 0.000001;
+	//Double used to contain the temporary Vval value to calculate sigma.
+	double tempVval = 0;
 
+	//Now find value iteration results for infinite horizon case
+/*
+	while (sigma < (maxErr*(1 - gamma))/gamma ){
+
+		//Initialize the values that are being edited by setting them to the initial grid
+		//Do same for arrow grid
+        for(stateCtr = 0; stateCtr < 36; stateCtr++){
+            v_Vvals[stateCtr] = initValueGrid[stateCtr];
+            v_currArrows[stateCtr] = initArrowGrid[stateCtr];
+
+
+        }
+
+		//Iterate through each possible state s0-s35
+		for(stateCtr = 0; stateCtr < 36; stateCtr++){
+			maxActionVal = findMaxActionVal(stateCtr, v_Vvals);
+			tempVval = v_Vvals[stateCtr];
+			//Include gamma this time 
+			v_Vvals[stateCtr] = stateRewards[stateCtr] + (gamma * maxActionVal);
+
+			//Update arrow grid
+			if(!usedState){
+				v_currArrows[stateCtr] = '^';
+			}
+
+			else if(usedState){
+				v_currArrows[stateCtr] = 'v';
+			}
+
+			else if(usedState == 2){
+				v_currArrows[stateCtr] = '<';
+			}
+
+			else{
+				v_currArrows[stateCtr] = '>';
+			}
+
+
+            //Check that different between old values and new is not greater than sigma
+            double currErr = abs(v_Vvals[stateCtr] - tempVval)
+            if(currErr > sigma){
+            	//Update the sigma value to the absolute difference
+            	sigma = currErr;
+            }
+		}
+
+	}
+*/
 
 	//Display grids 
 	//printf('\n');
-
-	//Loop
-	//U = Uprime; double sigma = 0;
-		//for every state
-			//Uprime[s] = r(s) + discount * maxSum
-			//if abs(Uprime[s] - U[s]) > sigma
-				//sigma = abs(Uprime[s] - U[s])
 
 
 	return 0;
