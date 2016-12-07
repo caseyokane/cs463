@@ -73,11 +73,12 @@ int main()
 	//Now find value iteration results for 7 horizon
 	for (horizCtr = 0; horizCtr < 8; horizCtr++){
 
-		printf("Finite Horizon %d\n", horizCtr);
 		//Initialize the values that are being edited by setting them to the initial grid
-		memcpy(v_Vvals, initValueGrid, sizeof(v_Vvals));
 		//Do same for arrow grid
-		memcpy(v_currArrows, initArrowGrid, sizeof(v_currArrows));
+        for(stateCtr = 0; stateCtr < 36; stateCtr++){
+            v_Vvals[stateCtr] = initValueGrid[stateCtr];
+            v_currArrows[stateCtr] = initArrowGrid[stateCtr];
+        }
 
 		//Iterate through each possible state s0-s35
 		for(stateCtr = 0; stateCtr < 36; stateCtr++){
@@ -102,17 +103,21 @@ int main()
 			}
 		}
 
-		//Display grids 
-		displayGrids(v_currArrows, v_Vvals);
-		printf("\n");
 
 	}
 
-	//Find results for infinite horizon
+	//Display grid 
+	printf("Finite Horizon 7 Solution\n");
+	displayGrids(v_currArrows, v_Vvals);
+	printf("\n");
+	
+
+    //Find results for infinite horizon using same methods as 7 horizon but with
+    //sigma.
 
 
 	//Display grids 
-	printf('\n');
+	//printf('\n');
 
 	//Loop
 	//U = Uprime; double sigma = 0;
@@ -120,22 +125,6 @@ int main()
 			//Uprime[s] = r(s) + discount * maxSum
 			//if abs(Uprime[s] - U[s]) > sigma
 				//sigma = abs(Uprime[s] - U[s])
-
-
-	//Find the max sum by using the current state and seeing which states can be reached
-
-	//MDP Class: Initializes a list of actions, terminal states (rewards), gamma
-		//R(class, state) returns a reward for a given state
-		//T(class, state, action) returns probabilities
-		//actions(class, state) returns actions that can be preformed in a given state 
-
-	//MDP Grid: intilizes a gid, num rows/cols and a gamma 
-		//T(class, state, action) returns probability and new state using go()
-		//go(class, state, direction) returns state if move can be made
-		//to_grid convert mapping to grid
-		//to_arrows convert mapping to arrow grid
-
-
 
 
 	return 0;
@@ -146,10 +135,11 @@ void displayGrids(char arrowGrid[], double valueGrid[]){
 	//Simple counter variable
 	int i;
 
+    printf("Value function of the grid:\n");
 	//First display the values
 	for(i = 0; i<36; i++){
 
-		printf(" %d ", valueGrid[i]);
+		printf("%lf\t", valueGrid[i]);
 
 		if((i+1)%6 == 0){
 			//Finish each row with a newline 
@@ -157,10 +147,11 @@ void displayGrids(char arrowGrid[], double valueGrid[]){
 		}
 	}
 
+    printf("Policy function of the grid:\n");
 	//Then the arrows
 	for(i = 0; i<36; i++){
 
-		printf(" %d ", arrowGrid[i]);
+		printf("%c\t ", arrowGrid[i]);
 
 		if((i+1)%6 == 0){
 			//Finish each row with a newline 
@@ -169,7 +160,7 @@ void displayGrids(char arrowGrid[], double valueGrid[]){
 	}
 }
 
-double findMaxActionVal(int currState, valueGrid[]){
+double findMaxActionVal(int currState, double valueGrid[]){
 
 	//Array of ints to store values for every action
 	int actionVals[4] = {0};
