@@ -56,7 +56,7 @@ int main()
 
 	//Associate rewards with states 10 (+10), 19 (+100), and 24 (+20)
 	double stateRewards[36];
-	stateRewards[9] = 10; stateRewards[18] = 100; stateRewards[23] = 20;
+	stateRewards[9] = 10; stateRewards[18] = 100; stateRewards[23] = 20; stateRewards[26] = 5;
 
 	//simple counter variables for current horizon and current state
 	int horizCtr = 0; int stateCtr = 0;
@@ -89,6 +89,13 @@ int main()
 
 		//Iterate through each possible state s0-s35
 		for(stateCtr = 0; stateCtr < 36; stateCtr++){
+
+            //Account for internal walls
+            if(stateCtr == 10 || stateCtr == 12 || stateCtr == 13 || stateCtr == 16 
+                || stateCtr == 19 || stateCtr == 22 || stateCtr == 25 || stateCtr == 28){
+                continue;
+            }     
+
 			maxActionVal = findMaxActionVal(stateCtr, v_Vvals);
 			v_Vvals[stateCtr] = stateRewards[stateCtr] + maxActionVal;
 
@@ -123,8 +130,8 @@ int main()
     //Find results for infinite horizon using same methods as 7 horizon but with
     //sigma.
 	printf("Outputting Infinite Horizon Results\n");
-	//Initialize gamma value as defined in the prompt
-	double gamma = 0.95;
+	//Initialize discount value as defined in the prompt
+	double discount = 0.95;
 	//Initialize value for sigma which keeps value-iteration operating 
 	double sigma = 0;
 	//Initialize variable to represent maximum error for iteration
@@ -140,15 +147,22 @@ int main()
      }
 
 	//Now find value iteration results for infinite horizon case
-	while (sigma < (maxErr*(1 - gamma))/gamma ){
+	while (sigma < (maxErr*(1 - discount))/discount ){
 
 
 		//Iterate through each possible state s0-s35
 		for(stateCtr = 0; stateCtr < 36; stateCtr++){
-			maxActionVal = findMaxActionVal(stateCtr, v_Vvals);
+			
+            //Account for internal walls
+            if(stateCtr == 10 || stateCtr == 12 || stateCtr == 13 || stateCtr == 16 
+                || stateCtr == 19 || stateCtr == 22 || stateCtr == 25 || stateCtr == 28){
+                continue;
+            }     
+
+            maxActionVal = findMaxActionVal(stateCtr, v_Vvals);
 			tempVval = v_Vvals[stateCtr];
-			//Include gamma this time 
-			v_Vvals[stateCtr] = stateRewards[stateCtr] + (gamma * maxActionVal);
+			//Include discount this time 
+			v_Vvals[stateCtr] = stateRewards[stateCtr] + (discount * maxActionVal);
 
 			//Update arrow grid
 			if(!usedState){
@@ -217,7 +231,7 @@ void displayGrids(char arrowGrid[], double valueGrid[]){
 double findMaxActionVal(int currState, double valueGrid[]){
 
 	//Array of ints to store values for every action
-	int actionVals[4] = {0};
+	double actionVals[4] = {0};
 	//Counter used to represent next possible state
 	int nxtStCtr = 0; 
 	int actionValsCtr = 0;
@@ -225,7 +239,6 @@ double findMaxActionVal(int currState, double valueGrid[]){
 	for(nxtStCtr = 0; nxtStCtr < 36; nxtStCtr++){
 		//Iterate through up probabilities
 		//Determine if it is possible to move up
-        //TODO: Fix this, it's only keeping for values with a score
 		if(upProbs[currState][nxtStCtr] != 0){
 			//find value using up action probabilities
 			actionVals[0] += (upProbs[currState][nxtStCtr] * valueGrid[currState]);
@@ -254,10 +267,10 @@ double findMaxActionVal(int currState, double valueGrid[]){
 	}
 
 	//Initialize up action as maximum 
-	double maxActionProb = actionVals[0]; usedState = 0;
+	double maxActionProb = actionVals[0]; usedState = 0; 
 	//Iterate through the collected probabilties
 	for(actionValsCtr = 1; actionValsCtr < 4; actionValsCtr++){
-		
+	
 		//If the new value is the new maximum then enter this branch
 		if(actionVals[actionValsCtr] > maxActionProb){
 		
@@ -266,6 +279,9 @@ double findMaxActionVal(int currState, double valueGrid[]){
 			usedState = actionValsCtr;
 		}
 	}
+
+    //printf("UpProb: %f value: %f result: %f", upProbs[0][0], valueGrid[0], (upProbs[0][0]* valueGrid[0]));
+    
 
 	//Finally, return the probability for the action that maximizes reward 
 	return maxActionProb;
